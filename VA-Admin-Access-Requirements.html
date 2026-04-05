@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VA Support Agent, Admin Access Requirements</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root { --green: #2D6A4F; --green-dark: #1B4332; --green-light: #D8F3DC; --text: #1A2E1A; --text2: #4A5E4A; --bg: #F0F2F0; --card: #fff; --border: #D8DFD8; --amber: #92400E; --amber-light: #FEF3C7; --blue: #1E40AF; --blue-light: #DBEAFE; --rose: #9F1239; --rose-light: #FFE4E6; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+.container { max-width: 800px; margin: 0 auto; padding: 24px; }
+h1 { font-family: 'Outfit', sans-serif; font-size: 28px; font-weight: 800; color: var(--green-dark); margin-bottom: 4px; }
+h2 { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 700; color: var(--green-dark); margin: 32px 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--green); }
+h3 { font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 700; color: var(--text); margin: 20px 0 8px; }
+p, li { font-size: 14px; color: var(--text2); }
+.card { background: var(--card); border-radius: 12px; padding: 20px; margin: 12px 0; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.card-green { background: var(--green-light); border-color: #86EFAC; }
+.card-amber { background: var(--amber-light); border-color: #FDE68A; }
+.card-blue { background: var(--blue-light); border-color: #93C5FD; }
+.card-rose { background: var(--rose-light); border-color: #FECDD3; }
+.badge { display: inline-block; padding: 3px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.badge-green { background: var(--green-light); color: var(--green-dark); }
+.badge-amber { background: var(--amber-light); color: var(--amber); }
+.badge-rose { background: var(--rose-light); color: var(--rose); }
+table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
+th { background: var(--green-dark); color: #fff; padding: 10px 14px; text-align: left; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+td { padding: 10px 14px; border-bottom: 1px solid var(--border); color: var(--text2); }
+tr:nth-child(even) td { background: #F8FAF8; }
+code { font-family: 'JetBrains Mono', monospace; background: #E8ECE8; padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+ul { padding-left: 20px; margin: 8px 0; }
+li { margin: 4px 0; }
+.priority-high { color: var(--rose); font-weight: 600; }
+.priority-med { color: var(--amber); font-weight: 600; }
+.header-bar { background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 60%, #40916C 100%); padding: 24px; border-radius: 14px; color: #fff; margin-bottom: 24px; }
+.header-bar p { color: rgba(255,255,255,0.7); }
+.section-num { display: inline-flex; width: 28px; height: 28px; border-radius: 8px; background: var(--green); color: #fff; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 14px; margin-right: 8px; }
+@media print { body { background: #fff; } .container { max-width: 100%; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header-bar">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+    <span style="font-size:28px">🎾</span>
+    <h1 style="color:#fff;margin:0">Match Tennis</h1>
+  </div>
+  <p style="font-size:15px;font-weight:600;color:#fff;margin-bottom:2px">VA Support Agent, Admin Access Requirements</p>
+  <p style="font-size:12px">Developer handoff document · What to build so our VA can handle customer support</p>
+</div>
+
+<h2><span class="section-num">1</span> Background</h2>
+<p>We are hiring a VA (Virtual Assistant) to handle live customer support chats via <strong>tawk.to</strong> for both Match Tennis App (MTA) and Match Tennis Team (MTT). The VA needs limited admin access to resolve common customer issues without full database access.</p>
+
+<div class="card card-green">
+  <h3 style="margin-top:0">The VA already has:</h3>
+  <ul>
+    <li>A searchable Knowledge Base (HTML file) with 126 scripted customer responses</li>
+    <li>Ticket creation workflow for issues beyond their access level</li>
+    <li>tawk.to chat access to communicate with customers</li>
+  </ul>
+  <h3>What the VA still needs:</h3>
+  <ul>
+    <li><strong>A simple admin interface</strong> (web page or panel) where they can look up customer accounts and perform a few specific actions</li>
+  </ul>
+</div>
+
+<h2><span class="section-num">2</span> What the VA Needs to Do</h2>
+<p>The VA needs access to perform <strong>only these specific actions</strong>. Nothing more.</p>
+
+<table>
+  <thead>
+    <tr><th>Action</th><th>Details</th><th>Priority</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Search accounts</strong></td>
+      <td>Search by email address, name, or USTA number. Return: name, email on file, account status, subscription plan, privacy setting</td>
+      <td><span class="priority-high">Must have</span></td>
+    </tr>
+    <tr>
+      <td><strong>Send password reset link</strong></td>
+      <td>Trigger a password reset email to the customer's email on file. VA should be able to copy the reset link to paste into tawk.to chat if the email isn't arriving</td>
+      <td><span class="priority-high">Must have</span></td>
+    </tr>
+    <tr>
+      <td><strong>Unlock locked account</strong></td>
+      <td>Remove the login lock after too many failed attempts. Simple toggle/button</td>
+      <td><span class="priority-high">Must have</span></td>
+    </tr>
+    
+    <tr>
+      <td><strong>Toggle privacy to private</strong></td>
+      <td>Change account privacy from public to private. One way toggle (private cannot be reversed for 6 months). Should show a confirmation prompt</td>
+      <td><span class="priority-med">Important</span></td>
+    </tr>
+    <tr>
+      <td><strong>View player profiles</strong></td>
+      <td>See linked players on an account: player name, USTA number, ratings, linked UTR. Read only, no editing</td>
+      <td><span class="priority-med">Important</span></td>
+    </tr>
+    <tr>
+      <td><strong>View match/tournament history</strong></td>
+      <td>See a customer's recent matches, registered tournaments, and scores. Read only, helps verify customer issues</td>
+      <td><span class="priority-med">Important</span></td>
+    </tr>
+    <tr>
+      <td><strong>Update UTR rating</strong></td>
+      <td>Trigger a UTR rating refresh/resync for a player, or manually update UTR if the automated sync is out of date</td>
+      <td><span class="priority-high">Must have</span></td>
+    </tr>
+    <tr>
+      <td><strong>Delete failed login attempts</strong></td>
+      <td>Clear the failed login attempt counter for an account. Alternative to "Unlock Account" when the lock hasn't triggered yet but the customer is getting close or seeing warnings</td>
+      <td><span class="priority-high">Must have</span></td>
+    </tr>
+    <tr>
+      <td><strong>Add age division</strong></td>
+      <td>Add or update the player's primary age division (e.g., 12s, 14s, 16s, 18s). Needed when a player's division is missing or outdated</td>
+      <td><span class="priority-med">Important</span></td>
+    </tr>
+    <tr>
+      <td><strong>Search tournaments by ID</strong></td>
+      <td>Search for a tournament using the USTA Tournament ID. Display the tournament name, dates, location, and a copyable <strong>waiver/check-in link</strong> (pre-tournament VTD registration link) that the VA can paste into tawk.to chat for the customer.</td>
+      <td><span class="priority-high">Must have</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<h2><span class="section-num">3</span> What the VA Should NOT Be Able to Do</h2>
+<div class="card card-rose">
+  <p style="font-weight:600;color:var(--rose);margin-bottom:8px">These actions remain restricted. When they're needed, the VA creates a support ticket for our team.</p>
+  <table>
+    <thead><tr><th>Restricted Action</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td style="background:#FFE4E6"><strong>View ANY financial/billing data</strong></td><td style="background:#FFE4E6"><strong>VA has ZERO access to charges, payments, subscriptions, billing history, or any financial information. Create a ticket immediately for ALL billing issues.</strong></td></tr>
+      <tr><td>Delete accounts</td><td>Permanent, irreversible</td></tr>
+      <tr><td>Merge accounts</td><td>Complex data migration, risk of data loss</td></tr>
+      <tr><td>Process refunds</td><td>Financial action requiring billing system access</td></tr>
+      <tr><td>Cancel subscriptions</td><td>Billing impact, needs proper cancellation flow</td></tr>
+      <tr><td>Edit match scores</td><td>Affects rankings, needs tournament director approval</td></tr>
+      <tr><td>Edit player profiles/ratings</td><td>Data integrity, syncs with USTA/UTR</td></tr>
+      <tr><td>Change seedings or draws</td><td>Tournament director responsibility</td></tr>
+      <tr><td>Change team captains</td><td>Needs verification from league/team</td></tr>
+      <tr><td>Modify standings or records</td><td>Data integrity</td></tr>
+      <tr><td>Change addresses/sections</td><td>Affects rankings and tournament eligibility</td></tr>
+      <tr><td>Reactivate expired memberships</td><td>Requires payment verification</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2><span class="section-num">4</span> Suggested Screen Layout</h2>
+<p>A single page web app with these sections would cover everything:</p>
+
+<div class="card">
+  <h3 style="margin-top:0">Screen 1: Account Lookup</h3>
+  <ul>
+    <li><strong>Search bar</strong> at top: search by email, name, or USTA number</li>
+    <li><strong>Account info card</strong> showing: name, email, account status (active/locked), date created, privacy setting, age division</li>
+    <li><strong style="color:var(--rose)">⚠️ NO financial data shown:</strong> No subscription plan, no billing dates, no payment info. VA creates tickets for all billing questions.</li>
+    <li><strong>Action buttons:</strong>
+      <ul>
+        <li><code>Send Password Reset</code> — triggers reset email, shows copyable link</li>
+        <li><code>Unlock Account</code> — only visible if account is locked</li>
+        <li><code>Set to Private</code> — with confirmation dialog ("Are you sure? 6 month lock")</li>
+      </ul>
+    </li>
+  </ul>
+</div>
+
+
+
+<div class="card">
+  <h3 style="margin-top:0">Screen 3: Tournament Lookup</h3>
+  <ul>
+    <li><strong>Search bar:</strong> Search by Tournament ID</li>
+    <li><strong>Tournament card:</strong> Tournament name, dates, location, director name</li>
+    <li><strong>Action buttons:</strong>
+      <ul>
+        <li><code>Copy Waiver Link</code> — copies the pre-tournament check-in / VTD waiver link for this tournament. VA pastes into tawk.to chat.</li>
+        <li><code>Copy Tournament Link</code> — copies the USTA tournament page link</li>
+      </ul>
+    </li>
+    <li><em>Read only tournament info, no editing</em></li>
+  </ul>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">Screen 4: Player Profiles (below tournament or as a tab)</h3>
+  <ul>
+    <li>List of players linked to the account</li>
+    <li>Each player shows: name, USTA number, NTRP rating, UTR rating, privacy status</li>
+    <li><em>Read only, no edit buttons</em></li>
+  </ul>
+</div>
+
+<div class="card">
+  <h3 style="margin-top:0">Screen 5: Recent Activity (optional, very helpful)</h3>
+  <ul>
+    <li>Recent tournaments registered</li>
+    <li>Recent match results</li>
+    <li><em>Read only, helps VA verify customer complaints like "my match is missing"</em></li>
+  </ul>
+</div>
+
+<h2><span class="section-num">5</span> Match Tennis Team (MTT), Additional Actions</h2>
+<p>The admin panel also needs a <strong>Match Tennis Team</strong> section (or separate tab) for MTT-specific actions. These are separate from the MTA actions above.</p>
+
+<table>
+  <thead>
+    <tr><th>Action</th><th>Details</th><th>Priority</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Send team registration link</strong></td>
+      <td>Look up a team event by state/date, then generate and copy the registration link to paste into tawk.to chat. VA frequently needs to send customers the correct registration link for their specific event.</td>
+      <td><span class="priority-high">Must have</span></td>
+    </tr>
+    <tr>
+      <td><strong>Send password reset link (MTT)</strong></td>
+      <td>Same as MTA but for Match Tennis Team accounts. Trigger a reset email and provide a copyable link. MTT has separate login credentials from MTA.</td>
+      <td><span class="priority-high">Must have</span></td>
+    </tr>
+    <tr>
+      <td><strong>Update NTRP rating</strong></td>
+      <td>Edit a player's NTRP (National Tennis Rating Program) rating on their MTT profile. Needed when a player's rating has changed or was entered incorrectly during registration.</td>
+      <td><span class="priority-high">Must have</span></td>
+    </tr>
+    <tr>
+      <td><strong>Update T-shirt size</strong></td>
+      <td>Edit a player's T-shirt size on their team registration. Common request from parents who entered the wrong size during registration or need to change it before the event.</td>
+      <td><span class="priority-med">Important</span></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="card">
+  <h3 style="margin-top:0">Suggested MTT Screen Layout</h3>
+  <ul>
+    <li><strong>Search bar:</strong> Search MTT accounts by email, name, or team name</li>
+    <li><strong>Account card:</strong> Name, email, teams they belong to, role (player/captain)</li>
+    <li><strong>Action buttons:</strong>
+      <ul>
+        <li><code>Send Password Reset</code> — triggers MTT-specific reset email with copyable link</li>
+        <li><code>Update NTRP</code> — dropdown or input to change rating</li>
+        <li><code>Update T-shirt Size</code> — dropdown: YS, YM, YL, AS, AM, AL, AXL, AXXL</li>
+      </ul>
+    </li>
+    <li><strong>Event registration links:</strong>
+      <ul>
+        <li>Search/filter events by state and date</li>
+        <li><code>Copy Registration Link</code> button next to each event</li>
+        <li>VA pastes link into tawk.to for the customer</li>
+      </ul>
+    </li>
+    <li><strong>Player/team info:</strong> Read only view of team roster, division, event details</li>
+  </ul>
+</div>
+
+<h2><span class="section-num">6</span> Security Requirements</h2>
+<div class="card card-amber">
+  <ul>
+    <li><strong>Login required:</strong> VA must log in with their own credentials (not a shared account)</li>
+    <li><strong>Role based:</strong> Create a "Support Agent" role with only the permissions listed above</li>
+    <li><strong>Audit log:</strong> Log every action the VA takes (who searched what, who sent resets, who changed privacy) with timestamps</li>
+    <li><strong>No bulk actions:</strong> VA can only act on one account at a time</li>
+    <li><strong>Session timeout:</strong> Auto logout after 30 minutes of inactivity</li>
+    <li><strong>Access from:</strong> Web browser only (no API keys or direct database access given to VA)</li>
+  </ul>
+</div>
+
+<h2><span class="section-num">7</span> How It Gets Used Day to Day</h2>
+<p>Here's a typical workflow showing how the VA uses tawk.to + the Knowledge Base + the admin panel together:</p>
+
+<div class="card card-blue">
+  <p style="font-weight:600;color:var(--blue);margin-bottom:12px">Example: Customer says "I'm locked out of my account"</p>
+  <table>
+    <thead><tr><th>Step</th><th>Where</th><th>What happens</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>tawk.to</td><td>Customer sends message. VA greets them.</td></tr>
+      <tr><td>2</td><td>Support Hub</td><td>VA searches "locked out" in the KB. Finds the entry, copies the customer response.</td></tr>
+      <tr><td>3</td><td>tawk.to</td><td>VA pastes the response asking for name and email.</td></tr>
+      <tr><td>4</td><td>tawk.to</td><td>Customer replies with their email.</td></tr>
+      <tr><td>5</td><td>Admin Panel</td><td>VA searches by email. Sees account is locked. Clicks "Unlock Account."</td></tr>
+      <tr><td>6</td><td>Admin Panel</td><td>VA clicks "Send Password Reset." Copies the reset link.</td></tr>
+      <tr><td>7</td><td>tawk.to</td><td>VA pastes: "I've unlocked your account and sent a password reset link. Here's the direct link: [link]"</td></tr>
+      <tr><td>8</td><td>tawk.to</td><td>Customer confirms it worked. VA closes chat.</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="card card-amber">
+  <p style="font-weight:600;color:var(--amber);margin-bottom:12px">Example: Customer says "I was charged twice, I want a refund"</p>
+  <table>
+    <thead><tr><th>Step</th><th>Where</th><th>What happens</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>tawk.to</td><td>Customer sends message. VA greets them.</td></tr>
+      <tr><td>2</td><td>Support Hub</td><td>VA searches "charged twice." Finds the entry. Sees it's "DB Required."</td></tr>
+      <tr><td>3</td><td>tawk.to</td><td>VA copies and pastes the customer response asking for account details.</td></tr>
+      <tr><td>4</td><td>Support Hub</td><td>Admin Notes say: "THIS IS A FINANCIAL/BILLING ISSUE. CREATE A SUPPORT TICKET IMMEDIATELY."</td></tr>
+      <tr><td>5</td><td>Support Hub</td><td>VA goes to Create Ticket tab. Fills in customer info and what the customer described.</td></tr>
+      <tr><td>6</td><td colspan="2" style="background:var(--amber-light);color:var(--amber)"><strong>VA does NOT look up any billing info in admin panel. Zero financial access.</strong></td></tr>
+      <tr><td>7</td><td>tawk.to</td><td>VA tells customer: "I've created ticket #1234 for our billing team. They will review your account and follow up within 1 business day."</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2><span class="section-num">8</span> Volume Estimate</h2>
+<div class="card">
+  <p>Based on the knowledge base, here's roughly how often each admin action will be used:</p>
+  <table>
+    <thead><tr><th>Action</th><th>Estimated frequency</th></tr></thead>
+    <tbody>
+      <tr><td>Search accounts</td><td>Almost every chat (80%+ of interactions)</td></tr>
+      <tr><td>Send password reset</td><td>Multiple times daily (most common issue)</td></tr>
+      <tr><td>Unlock account</td><td>A few times per week</td></tr>
+      
+      <tr><td>Toggle privacy</td><td>A few times per month</td></tr>
+      <tr><td>View player profiles</td><td>Several times daily</td></tr>
+      <tr><td>View match history</td><td>A few times daily</td></tr>
+      <tr><td>Update UTR rating</td><td>A few times per week</td></tr>
+      <tr><td>Delete failed login attempts</td><td>A few times per week</td></tr>
+      <tr><td>Add/update age division</td><td>A few times per week</td></tr>
+      <tr><td>Search tournament by ID + send waiver link</td><td>Multiple times daily (very common)</td></tr>
+      <tr><td colspan="2" style="background:var(--green-light);font-weight:600;color:var(--green-dark)">Match Tennis Team (MTT) Actions</td></tr>
+      <tr><td>Send team registration links</td><td>Multiple times daily (very common)</td></tr>
+      <tr><td>MTT password resets</td><td>Multiple times daily</td></tr>
+      <tr><td>Update NTRP</td><td>A few times per week</td></tr>
+      <tr><td>Update T-shirt size</td><td>A few times per week</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2><span class="section-num">9</span> Summary for Developer</h2>
+<div class="card card-green">
+  <p style="font-weight:600;color:var(--green-dark);margin-bottom:8px;font-size:15px">TL;DR — Build a simple web page with:</p>
+  <p style="font-weight:600;color:var(--blue);margin-bottom:4px;font-size:13px">Match Tennis App (MTA):</p>
+  <ul style="font-size:14px;line-height:2">
+    <li>✅ Account search (by email, name, or USTA number)</li>
+    <li>✅ "Send Password Reset" button (with copyable link)</li>
+    <li>✅ "Unlock Account" button</li>
+    <li>✅ "Delete Failed Login Attempts" button</li>
+    <li>✅ "Update UTR Rating" button (trigger resync)</li>
+    <li>✅ "Add Age Division" field</li>
+    <li>✅ Search tournaments by ID + "Copy Waiver Link" button</li>
+    <li>✅ "Set to Private" button (with 6 month lock confirmation)</li>
+    <li>✅ Read only: player profiles, match/tournament history</li>
+    <li>🚫 NO access to subscription, billing, charges, or payment data</li>
+    <li>✅ Audit log of all VA actions</li>
+  </ul>
+  <p style="font-weight:600;color:var(--green);margin-top:12px;margin-bottom:4px;font-size:13px">Match Tennis Team (MTT):</p>
+  <ul style="font-size:14px;line-height:2">
+    <li>✅ Account search (by email, name, or team name)</li>
+    <li>✅ "Send Password Reset" button (MTT credentials, with copyable link)</li>
+    <li>✅ "Send Registration Link" (search events by state/date, copy link)</li>
+    <li>✅ "Update NTRP" field</li>
+    <li>✅ "Update T-shirt Size" dropdown</li>
+    <li>✅ Read only: team roster, event details, player roles</li>
+    <li>✅ Audit log of all VA actions</li>
+  </ul>
+  <p style="font-weight:600;color:var(--rose);margin-top:12px;margin-bottom:4px;font-size:13px">Still restricted (ticket required):</p>
+  <ul style="font-size:14px;line-height:2">
+    <li>❌ No delete accounts, merge accounts, process refunds</li>
+    <li>❌ No edit scores, change seedings, modify standings</li>
+    <li>❌ No cancel subscriptions, change captains, change team names</li>
+  </ul>
+  <p style="margin-top:12px;font-size:13px;color:var(--text2)">This should be a "Support Agent" role, separate from full admin access. The VA logs in with their own credentials. Everything they do is logged.</p>
+</div>
+
+</div>
+</body>
+</html>

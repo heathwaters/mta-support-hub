@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match Tennis, VA Admin Panel API Specification</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root { --green: #2D6A4F; --green-dark: #1B4332; --green-light: #D8F3DC; --text: #1A2E1A; --text2: #4A5E4A; --bg: #F0F2F0; --card: #fff; --border: #D8DFD8; --amber: #92400E; --amber-light: #FEF3C7; --blue: #1E40AF; --blue-light: #DBEAFE; --rose: #9F1239; --rose-light: #FFE4E6; --purple: #6D28D9; --purple-light: #EDE9FE; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+.container { max-width: 860px; margin: 0 auto; padding: 24px; }
+h1 { font-family: 'Outfit', sans-serif; font-size: 26px; font-weight: 800; color: var(--green-dark); }
+h2 { font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 700; color: var(--green-dark); margin: 36px 0 12px; padding-bottom: 8px; border-bottom: 2px solid var(--green); }
+h3 { font-family: 'Outfit', sans-serif; font-size: 15px; font-weight: 700; color: var(--text); margin: 20px 0 6px; }
+p, li { font-size: 14px; color: var(--text2); }
+.card { background: var(--card); border-radius: 12px; padding: 20px; margin: 12px 0; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+pre { background: #1B2E1B; color: #A8D5A2; border-radius: 10px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.7; overflow-x: auto; margin: 8px 0; }
+code { font-family: 'JetBrains Mono', monospace; background: #E8ECE8; padding: 1px 6px; border-radius: 4px; font-size: 12px; }
+.method { display: inline-block; padding: 2px 10px; border-radius: 4px; font-family: 'JetBrains Mono', monospace; font-size: 11px; font-weight: 700; margin-right: 8px; }
+.get { background: var(--blue-light); color: var(--blue); }
+.post { background: var(--green-light); color: var(--green-dark); }
+.put { background: var(--amber-light); color: var(--amber); }
+.delete { background: var(--rose-light); color: var(--rose); }
+.endpoint { font-family: 'JetBrains Mono', monospace; font-size: 14px; font-weight: 600; color: var(--text); }
+table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 13px; }
+th { background: var(--green-dark); color: #fff; padding: 8px 12px; text-align: left; font-family: 'Outfit', sans-serif; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+td { padding: 8px 12px; border-bottom: 1px solid var(--border); }
+tr:nth-child(even) td { background: #F8FAF8; }
+.badge { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 10px; font-weight: 600; }
+.header-bar { background: linear-gradient(135deg, #1B4332 0%, #2D6A4F 60%, #40916C 100%); padding: 24px; border-radius: 14px; color: #fff; margin-bottom: 24px; }
+.priority { font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+.p1 { background: var(--rose-light); color: var(--rose); }
+.p2 { background: var(--amber-light); color: var(--amber); }
+.note { background: var(--amber-light); border: 1px solid #FDE68A; border-radius: 8px; padding: 12px; margin: 8px 0; font-size: 13px; }
+.note-blue { background: var(--blue-light); border-color: #93C5FD; }
+.note-rose { background: var(--rose-light); border-color: #FECDD3; }
+ul { padding-left: 20px; margin: 6px 0; }
+.num { display: inline-flex; width: 24px; height: 24px; border-radius: 6px; background: var(--green); color: #fff; align-items: center; justify-content: center; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 12px; margin-right: 6px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header-bar">
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px">
+    <span style="font-size:28px">🎾</span>
+    <h1 style="color:#fff;margin:0;font-size:24px">Match Tennis</h1>
+  </div>
+  <p style="font-size:15px;font-weight:600;color:#fff;margin-bottom:2px">VA Admin Panel, API Specification</p>
+  <p style="font-size:12px;color:rgba(255,255,255,0.6)">Developer blueprint · Build these API endpoints so the VA admin panel can connect to your database</p>
+</div>
+
+<!-- ============ OVERVIEW ============ -->
+<h2>Overview</h2>
+<div class="card">
+  <h3 style="margin-top:0">What this document is</h3>
+  <p>This is the API specification for the VA Support Admin Panel. You (the developer) build these endpoints. We have already built the frontend that will call them.</p>
+
+  <h3>Architecture</h3>
+  <pre>
+┌─────────────────┐     HTTPS/JSON      ┌─────────────────┐      SQL       ┌──────────────┐
+│  VA Admin Panel  │ ──────────────────► │   Your API       │ ────────────► │  Your DB      │
+│  (React frontend)│ ◄────────────────── │   (you build)    │ ◄──────────── │  (MySQL/etc)  │
+└─────────────────┘                      └─────────────────┘               └──────────────┘
+     Hosted on                            Hosted on your                    Your existing
+     Netlify/Vercel                       server/cloud                      database
+  </pre>
+
+  <h3>Requirements</h3>
+  <ul>
+    <li><strong>Base URL:</strong> Your API will live at something like <code>https://api.matchtennisapp.com/va</code> or <code>https://your-server.com/api/va</code></li>
+    <li><strong>Auth:</strong> Every request must include an API key or JWT token in the header: <code>Authorization: Bearer {token}</code></li>
+    <li><strong>Format:</strong> All requests and responses are JSON</li>
+    <li><strong>CORS:</strong> Allow requests from the admin panel domain</li>
+    <li><strong>Logging:</strong> Log every API call with: timestamp, VA user ID, action, target account email, IP address</li>
+  </ul>
+</div>
+
+<!-- ============ AUTH ============ -->
+<h2>Endpoint 0: Authentication</h2>
+<div class="card">
+  <p><span class="method post">POST</span> <span class="endpoint">/va/auth/login</span></p>
+  <p>VA logs into the admin panel with their own credentials.</p>
+
+  <h3>Request</h3>
+  <pre>
+{
+  "email": "va@matchtennisapp.com",
+  "password": "their-password"
+}
+  </pre>
+
+  <h3>Response</h3>
+  <pre>
+{
+  "success": true,
+  "token": "eyJhbGciOiJIUzI1NiIs...",   // JWT token, expires in 8 hours
+  "agent": {
+    "name": "VA Agent Name",
+    "role": "support_agent"
+  }
+}
+  </pre>
+
+  <div class="note-rose note">
+    <strong>Security:</strong> Create a "support_agent" role in your system. This role can ONLY access the endpoints listed in this document. No access to billing, financial data, admin settings, or destructive actions.
+  </div>
+</div>
+
+<!-- ============ SEARCH ============ -->
+<h2>Endpoint 1: Search Accounts (MTA)</h2>
+<div class="card">
+  <p><span class="method get">GET</span> <span class="endpoint">/va/mta/accounts/search?q={query}</span> <span class="priority p1">Must have</span></p>
+  <p>Search MTA accounts by email, name, or USTA number.</p>
+
+  <h3>Request</h3>
+  <pre>
+GET /va/mta/accounts/search?q=john@example.com
+Authorization: Bearer {token}
+  </pre>
+
+  <h3>Response</h3>
+  <pre>
+{
+  "results": [
+    {
+      "id": "usr_12345",
+      "name": "John Smith",
+      "email": "john@example.com",
+      "account_status": "active",         // active, locked, suspended
+      "failed_login_attempts": 0,
+      "privacy": "public",                // public, private
+      "date_created": "2024-01-15",
+      "players": [
+        {
+          "id": "plr_789",
+          "name": "Jane Smith",
+          "usta_number": "12345678",
+          "age_division": "14s",
+          "utr_rating": "5.23",
+          "ntrp_rating": "4.0",
+          "utr_last_synced": "2025-03-28"
+        }
+      ]
+    }
+  ],
+  "total": 1
+}
+  </pre>
+
+  <div class="note">
+    <strong>Important:</strong> Do NOT return any billing, subscription, payment, or financial data. The VA has zero access to financial information.
+  </div>
+</div>
+
+<!-- ============ PASSWORD RESET ============ -->
+<h2>Endpoint 2: Send Password Reset (MTA)</h2>
+<div class="card">
+  <p><span class="method post">POST</span> <span class="endpoint">/va/mta/accounts/{id}/password-reset</span> <span class="priority p1">Must have</span></p>
+  <p>Trigger a password reset email and return a copyable reset link.</p>
+
+  <h3>Request</h3>
+  <pre>
+POST /va/mta/accounts/usr_12345/password-reset
+Authorization: Bearer {token}
+  </pre>
+
+  <h3>Response</h3>
+  <pre>
+{
+  "success": true,
+  "reset_link": "https://www.matchtennisapp.com/reset?token=abc123def456",
+  "email_sent_to": "john@example.com",
+  "expires_in": "24 hours"
+}
+  </pre>
+
+  <div class="note-blue note">
+    The VA copies <code>reset_link</code> and pastes it into the tawk.to chat so the customer can click it directly, especially useful when reset emails aren't arriving.
+  </div>
+</div>
+
+<!-- ============ UNLOCK ============ -->
+<h2>Endpoint 3: Unlock Account / Clear Failed Attempts (MTA)</h2>
+<div class="card">
+  <p><span class="method post">POST</span> <span class="endpoint">/va/mta/accounts/{id}/unlock</span> <span class="priority p1">Must have</span></p>
+  <p>Unlock a locked account and clear all failed login attempts.</p>
+
+  <h3>Request</h3>
+  <pre>
+POST /va/mta/accounts/usr_12345/unlock
+Authorization: Bearer {token}
+  </pre>
+
+  <h3>Response</h3>
+  <pre>
+{
+  "success": true,
+  "previous_status": "locked",
+  "new_status": "active",
+  "failed_attempts_cleared": 5
+}
+  </pre>
+</div>
+
+<!-- ============ PRIVACY ============ -->
+<h2>Endpoint 4: Set Account to Private (MTA)</h2>
+<div class="card">
+  <p><span class="method put">PUT</span> <span class="endpoint">/va/mta/accounts/{id}/privacy</span> <span class="priority p2">Important</span></p>
+  <p>Change account privacy from public to private. One-way action with 6 month lock.</p>
+
+  <h3>Request</h3>
+  <pre>
+PUT /va/mta/accounts/usr_12345/privacy
+Authorization: Bearer {token}
+{
+  "privacy": "private",
+  "confirmed": true        // frontend must confirm with VA before sending
+}
+  </pre>
+
+  <h3>Response</h3>
+  <pre>
+{
+  "success": true,
+  "privacy": "private",
+  "locked_until": "2026-10-04",     // 6 months from now
+  "warning": "Cannot be reversed until 2026-10-04"
+}
+  </pre>
+
+  <div class="note-rose note">
+    <strong>Backend must enforce:</strong> If the account is already private and the lock period hasn't expired, reject the request to change back to public.
+  </div>
+</div>
+
+<!-- ============ UTR UPDATE ============ -->
+<h2>Endpoint 5: Update UTR Rating (MTA)</h2>
+<div class="card">
+  <p><span class="method post">POST</span> <span class="endpoint">/va/mta/players/{id}/utr-sync</span> <span class="priority p2">Important</span></p>
+  <p>Trigger a UTR rating resync for a specific player.</p>
+
+  <h3>Request</h3>
+  <pre>
+POST /va/mta/players/plr_789/utr-sync
+Authorization: Bearer {token}
+  </pre>
+
+  <h3>Response</h3>
+  <pre>
+{
+  "success": true,
+  "player": "Jane Smith",
+  "previous_utr": "5.23",
+  "sync_status": "queued",       // queued, completed, failed
+  "message": "UTR sync triggered. Rating will update within 24-48 hours."
+}
+  </pre>
+</div>
+
+<!-- ============ AGE DIVISION ============ -->
+<h2>Endpoint 6: Add/Update Age Division (MTA)</h2>
+<div class="card">
+  <p><span class="method put">PUT</span> <span class="endpoint">/va/mta/players/{id}/age-division</span> <span class="priority p2">Important</span></p>
+  <p>Set or update a player's primary age division.</p>
+
+  <h3>Request</h3>
+  <pre>
+PUT /va/mta/players/plr_789/age-division
+Authorization: Bearer {token}
+{
+  "age_division": "14s"       // 10s, 12s, 14s, 16s, 18s
+}
+  </pre>
+
+  <h3>Response</h3>
+  <pre>
+{
+  "success": true,
+  "player": "Jane Smith",
+  "age_division": "14s"
+}
+  </pre>
+</div>
+
+<!-- ============ TOURNAMENT SEARCH ============ -->
+<h2>Endpoint 7: Search Tournament + Get Waiver Link (MTA)</h2>
+<div class="card">
+  <p><span class="method get">GET</span> <span class="endpoint">/va/mta/tournaments/search?tid={tournament_id}</span> <span class="priority p1">Must have</span></p>
+  <p>Look up a tournament by ID and return the waiver/VTD check-in link.</p>
+
+  <h3>Request</h3>
+  <pre>
+GET /va/mta/tournaments/search?tid=TN12345
+Authorization: Bearer {token}
+  </pre>
+
+  <h3>Response</h3>
+  <pre>
+{
+  "tournament": {
+    "id": "TN12345",
+    "name": "USTA Southern Junior Open",
+    "dates": "April 12-14, 2026",
+    "location": "Orlando, FL",
+    "director_name": "Chris Walling",
+    "director_email": "director@example.com",
+    "waiver_link": "https://www.matchtennisapp.com/baseapp/checkin?tid=TN12345",
+    "usta_link": "https://playtennis.usta.com/competitions/TN12345"
+  }
+}
+  </pre>
+
+  <div class="note-blue note">
+    The VA copies <code>waiver_link</code> and pastes into tawk.to. This is the pre-tournament check-in / VTD registration link that all players must complete.
+  </div>
+</div>
+
+<!-- ============ MTT SECTION ============ -->
+<h2 style="border-bottom-color: var(--blue);">Match Tennis Team (MTT) Endpoints</h2>
+<p>These are separate endpoints for the MTT system, which has its own accounts and database.</p>
+
+<!-- MTT SEARCH -->
+<h2>Endpoint 8: Search Accounts (MTT)</h2>
+<div class="card">
+  <p><span class="method get">GET</span> <span class="endpoint">/va/mtt/accounts/search?q={query}</span> <span class="priority p1">Must have</span></p>
+  <p>Search MTT accounts by email, name, or team name.</p>
+
+  <h3>Response</h3>
+  <pre>
+{
+  "results": [
+    {
+      "id": "mtt_usr_456",
+      "name": "John Smith",
+      "email": "john@example.com",
+      "username": "john@example.com",
+      "account_status": "active",
+      "failed_login_attempts": 0,
+      "teams": [
+        {
+          "team_name": "Orlando Tennis Club A",
+          "role": "player",              // player, captain, co-captain
+          "event_name": "USTA Southern Adult 18+",
+          "ntrp_rating": "4.0",
+          "tshirt_size": "AL"
+        }
+      ]
+    }
+  ]
+}
+  </pre>
+</div>
+
+<!-- MTT PASSWORD RESET -->
+<h2>Endpoint 9: Send Password Reset (MTT)</h2>
+<div class="card">
+  <p><span class="method post">POST</span> <span class="endpoint">/va/mtt/accounts/{id}/password-reset</span> <span class="priority p1">Must have</span></p>
+  <p>Same pattern as MTA Endpoint 2, but for MTT credentials. Return a copyable reset link.</p>
+
+  <h3>Response</h3>
+  <pre>
+{
+  "success": true,
+  "reset_link": "https://www.matchtennisteam.com/baseapp/resetpw?token=xyz789",
+  "email_sent_to": "john@example.com",
+  "expires_in": "24 hours"
+}
+  </pre>
+</div>
+
+<!-- MTT UNLOCK -->
+<h2>Endpoint 10: Unlock Account / Clear Failed Attempts (MTT)</h2>
+<div class="card">
+  <p><span class="method post">POST</span> <span class="endpoint">/va/mtt/accounts/{id}/unlock</span> <span class="priority p1">Must have</span></p>
+  <p>Same pattern as MTA Endpoint 3.</p>
+</div>
+
+<!-- MTT REGISTRATION LINK -->
+<h2>Endpoint 11: Get Team Registration Link (MTT)</h2>
+<div class="card">
+  <p><span class="method get">GET</span> <span class="endpoint">/va/mtt/events/search?state={state}&date={date}</span> <span class="priority p1">Must have</span></p>
+  <p>Search for team events by state and/or date, return registration links.</p>
+
+  <h3>Request</h3>
+  <pre>
+GET /va/mtt/events/search?state=FL&date=2026-04
+Authorization: Bearer {token}
+  </pre>
+
+  <h3>Response</h3>
+  <pre>
+{
+  "events": [
+    {
+      "id": "tn_706",
+      "name": "MS JTT Spring 2026",
+      "state": "FL",
+      "dates": "April 19-20, 2026",
+      "registration_link": "https://mstennis.matchtennisteam.com/baseapp/online/tourninfo.html?tid=tn_706",
+      "registration_guide": "https://matchtennisteam-site-assets.s3.amazonaws.com/MatchTeamAppRegistrationGuideGenral.pdf",
+      "director_name": "Tournament Director",
+      "director_email": "director@example.com"
+    }
+  ]
+}
+  </pre>
+
+  <div class="note-blue note">
+    VA copies <code>registration_link</code> and pastes into tawk.to. Can also share the <code>registration_guide</code> PDF link if the customer needs step-by-step instructions.
+  </div>
+</div>
+
+<!-- MTT UPDATE NTRP -->
+<h2>Endpoint 12: Update NTRP Rating (MTT)</h2>
+<div class="card">
+  <p><span class="method put">PUT</span> <span class="endpoint">/va/mtt/accounts/{id}/teams/{team_id}/ntrp</span> <span class="priority p2">Important</span></p>
+  <p>Update a player's NTRP rating for a specific team.</p>
+
+  <h3>Request</h3>
+  <pre>
+PUT /va/mtt/accounts/mtt_usr_456/teams/team_123/ntrp
+Authorization: Bearer {token}
+{
+  "ntrp_rating": "4.5"
+}
+  </pre>
+
+  <h3>Response</h3>
+  <pre>
+{
+  "success": true,
+  "player": "John Smith",
+  "team": "Orlando Tennis Club A",
+  "previous_ntrp": "4.0",
+  "new_ntrp": "4.5"
+}
+  </pre>
+</div>
+
+<!-- MTT UPDATE TSHIRT -->
+<h2>Endpoint 13: Update T-Shirt Size (MTT)</h2>
+<div class="card">
+  <p><span class="method put">PUT</span> <span class="endpoint">/va/mtt/accounts/{id}/teams/{team_id}/tshirt</span> <span class="priority p2">Important</span></p>
+  <p>Update a player's T-shirt size for a specific team event.</p>
+
+  <h3>Request</h3>
+  <pre>
+PUT /va/mtt/accounts/mtt_usr_456/teams/team_123/tshirt
+Authorization: Bearer {token}
+{
+  "tshirt_size": "AM"        // YS, YM, YL, AS, AM, AL, AXL, AXXL
+}
+  </pre>
+
+  <h3>Response</h3>
+  <pre>
+{
+  "success": true,
+  "player": "John Smith",
+  "previous_size": "AL",
+  "new_size": "AM"
+}
+  </pre>
+</div>
+
+<!-- ============ SUMMARY ============ -->
+<h2>Summary: All Endpoints</h2>
+<div class="card">
+  <table>
+    <thead><tr><th>#</th><th>Method</th><th>Endpoint</th><th>Action</th><th>Priority</th></tr></thead>
+    <tbody>
+      <tr><td>0</td><td><span class="method post">POST</span></td><td><code>/va/auth/login</code></td><td>VA login</td><td><span class="priority p1">Must</span></td></tr>
+      <tr><td colspan="5" style="background:var(--green-light);font-weight:600;color:var(--green-dark);font-size:12px">MATCH TENNIS APP (MTA)</td></tr>
+      <tr><td>1</td><td><span class="method get">GET</span></td><td><code>/va/mta/accounts/search</code></td><td>Search accounts</td><td><span class="priority p1">Must</span></td></tr>
+      <tr><td>2</td><td><span class="method post">POST</span></td><td><code>/va/mta/accounts/{id}/password-reset</code></td><td>Send password reset + get link</td><td><span class="priority p1">Must</span></td></tr>
+      <tr><td>3</td><td><span class="method post">POST</span></td><td><code>/va/mta/accounts/{id}/unlock</code></td><td>Unlock + clear failed attempts</td><td><span class="priority p1">Must</span></td></tr>
+      <tr><td>4</td><td><span class="method put">PUT</span></td><td><code>/va/mta/accounts/{id}/privacy</code></td><td>Set to private</td><td><span class="priority p2">Imp</span></td></tr>
+      <tr><td>5</td><td><span class="method post">POST</span></td><td><code>/va/mta/players/{id}/utr-sync</code></td><td>Trigger UTR resync</td><td><span class="priority p2">Imp</span></td></tr>
+      <tr><td>6</td><td><span class="method put">PUT</span></td><td><code>/va/mta/players/{id}/age-division</code></td><td>Update age division</td><td><span class="priority p2">Imp</span></td></tr>
+      <tr><td>7</td><td><span class="method get">GET</span></td><td><code>/va/mta/tournaments/search</code></td><td>Lookup tournament + waiver link</td><td><span class="priority p1">Must</span></td></tr>
+      <tr><td colspan="5" style="background:var(--blue-light);font-weight:600;color:var(--blue);font-size:12px">MATCH TENNIS TEAM (MTT)</td></tr>
+      <tr><td>8</td><td><span class="method get">GET</span></td><td><code>/va/mtt/accounts/search</code></td><td>Search MTT accounts</td><td><span class="priority p1">Must</span></td></tr>
+      <tr><td>9</td><td><span class="method post">POST</span></td><td><code>/va/mtt/accounts/{id}/password-reset</code></td><td>MTT password reset + link</td><td><span class="priority p1">Must</span></td></tr>
+      <tr><td>10</td><td><span class="method post">POST</span></td><td><code>/va/mtt/accounts/{id}/unlock</code></td><td>Unlock MTT account</td><td><span class="priority p1">Must</span></td></tr>
+      <tr><td>11</td><td><span class="method get">GET</span></td><td><code>/va/mtt/events/search</code></td><td>Find events + registration link</td><td><span class="priority p1">Must</span></td></tr>
+      <tr><td>12</td><td><span class="method put">PUT</span></td><td><code>/va/mtt/accounts/{id}/.../ntrp</code></td><td>Update NTRP rating</td><td><span class="priority p2">Imp</span></td></tr>
+      <tr><td>13</td><td><span class="method put">PUT</span></td><td><code>/va/mtt/accounts/{id}/.../tshirt</code></td><td>Update T-shirt size</td><td><span class="priority p2">Imp</span></td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ============ WHAT TO GIVE ME BACK ============ -->
+<h2>What to Give Back to Us</h2>
+<div class="card" style="background:var(--green-light);border-color:#86EFAC">
+  <p style="font-weight:600;color:var(--green-dark);font-size:15px;margin-bottom:8px">Once the API is built, we need:</p>
+  <ol style="font-size:14px;line-height:2.2">
+    <li><strong>Base URL</strong> — where the API lives (e.g., <code>https://api.matchtennisapp.com/va</code>)</li>
+    <li><strong>VA login credentials</strong> — username/password for the support agent account</li>
+    <li><strong>Any changes</strong> to the response format from what's documented above</li>
+    <li><strong>CORS whitelist</strong> — we'll tell you the admin panel domain to allow</li>
+  </ol>
+  <p style="margin-top:12px;font-size:13px;color:var(--text2)">With these 4 things, we can connect the frontend admin panel to your API and the VA is ready to go.</p>
+</div>
+
+<!-- ============ TIMELINE ============ -->
+<h2>Suggested Build Order</h2>
+<div class="card">
+  <p>If building incrementally, this is the recommended order by impact:</p>
+  <table>
+    <thead><tr><th>Phase</th><th>Endpoints</th><th>Impact</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Phase 1</strong><br/>Get the VA working</td><td>#0 Login<br/>#1 Search MTA<br/>#2 Password Reset MTA<br/>#3 Unlock MTA</td><td>Covers ~60% of DB Required chats (password/login issues are the #1 support topic)</td></tr>
+      <tr><td><strong>Phase 2</strong><br/>MTT basics</td><td>#8 Search MTT<br/>#9 Password Reset MTT<br/>#10 Unlock MTT<br/>#11 Registration Links</td><td>Covers team event support (high volume during tournament season)</td></tr>
+      <tr><td><strong>Phase 3</strong><br/>Full capability</td><td>#4 Privacy<br/>#5 UTR Sync<br/>#6 Age Division<br/>#7 Tournament/Waiver<br/>#12 NTRP<br/>#13 T-shirt</td><td>Remaining actions, lower volume but important</td></tr>
+    </tbody>
+  </table>
+</div>
+
+</div>
+</body>
+</html>
