@@ -136,22 +136,6 @@ TICKET NOTES: Include both email addresses, which account to keep as primary, an
 4. Troubleshoot from there based on what you find
 
 The scripted response should handle most cases. Admin panel is backup.`,es:`N/A, general information question.`,fu:``,at:`VA Agent handles completely. This is a general information question that does not require database access.`},
-  {id:10,c:"Registration / Account Creation",h:"LIVE",p:"Low",sc:"/mta-no-confirm-email",
-    q:`I registered but never received a confirmation email.`,cr:`Hi {name}, thank you for contacting Match Tennis Support! Confirmation emails can sometimes be filtered by your email provider.  first. If you still cannot find it, I will need the following to have a specialist resend it:
-1. Your first and last name associated with account                                               2. The email address you registered with
-3. Summary of Issue`,vr:`ADMIN PANEL STEPS:
-1. Ask customer for their email
-2. Go to Admin Panel > Account Search
-3. Search by email to verify the account was created
-4. If account exists: Click "Send Password Reset" so they can access it
-5. Copy the reset link and paste into tawk.to as a workaround
-
-If no account found, they may need to re-register. Walk them through signup steps.`,es:`If confirmation email repeatedly fails, Create support ticket. Collect: I will need the following to have a specialist resend it:
-1. Your first and last name associated with account                                               2. The email address you registered with
-3. Summary of Issue`,fu:`1. What is your first and last name?
-2. What email address did you register with?
-3. What is your USTA number?
-5. What email provider do you use (Gmail, Yahoo, iCloud)?`,at:`VA Agent copies the reset password link from the Admin Panel and pastes it into the tawk.to chat. VA Agent collects info and creates ticket. Live Agent resends from admin panel and checks account status.`},
   {id:12,c:"Registration / Account Creation",h:"LIVE",p:"Low",sc:"/mta-register-tournament",
     q:`How do I register for a specific tournament?`,cr:`Hi {name}, thank you for contacting Match Tennis Support! To register for USTA  tournament:
 1. Open Match Tennis App and go to the Tournaments tab
@@ -244,7 +228,7 @@ If UTR linking continues to fail, create a support ticket with the customer's em
 3. Summary of Issue                                                                      4. Player First and Last Name  and USTA Number`,fu:`1. What is your UTR ID or the email associated with your UTR account?
 2. What is your Match Tennis username or USTA number?`,at:`VA Agent provides self-service steps. If that fails, Live Agent links manually in admin panel.`},
   {id:21,c:"USTA / Ratings / UTR",h:"VA",p:"Medium",sc:"/mta-address-change",
-    q:`I moved to a new state but my address has not updated in Match Tennis.`,cr:`Hi {name}, thank you for contacting Match Tennis Support! I will connect you with a support specialist who can update it manually right now so everything is correct. If no specialist then collect 1. First and Last Name Associated with account 2. Email Associated with account 3. Player First and Last Name 4. Player USTA Number 5. New City and State 6. New District and Section`,vr:`ADMIN STEPS:
+    q:`I moved to a new state but my address has not updated in Match Tennis.`,cr:`Hi {name}, thank you for contacting Match Tennis Support! Our team will need to update this manually. I will need the following information.  1. First and Last Name Associated with account 2. Email Associated with account 3. Player First and Last Name 4. Player USTA Number 5. New City and State 6. New District and Section`,vr:`ADMIN STEPS:
 1. Ask customer for their name, email, and new city/state/district/section
 2. Search admin panel by email to locate the account
 3. You CANNOT update address/location yourself. Create a support ticket.
@@ -2274,8 +2258,8 @@ function App(){
 
       {tab==="escalation"&&<div style={{maxWidth:640,margin:"0 auto",padding:24}}><div style={{background:"var(--card)",borderRadius:14,padding:28,border:"1px solid var(--border)"}}>
         <h2 style={{fontSize:20,fontWeight:700,fontFamily:"'Outfit',sans-serif",marginBottom:16}}>Escalation Flow</h2>
-        {[{s:1,t:'Greet: "Hi {name}, thank you for contacting Match Tennis Support!"',c:"var(--green-light)"},{s:2,t:"Check tawk.to URL: matchtennisapp.com = MTA, matchtennisteam.com = MTT",c:"var(--amber-light)"},{s:3,t:"Search the Knowledge Base for the question.",c:"var(--blue-light)"},{s:4,t:'KB Only: Copy response into chat. Follow up if needed.',c:"var(--blue-light)"},{s:5,t:'DB Required: Open Admin Panel, look up account, take action.',c:"var(--amber-light)"},{s:6,t:"Need a ticket? Use Create Ticket tab. Collect all fields.",c:"var(--purple-light)"},{s:7,t:"Give customer ticket number. Specialist follows up in 1 day.",c:"var(--green-light)"}].map((s,i)=><div key={s.s} style={{display:"flex",gap:14,position:"relative"}}>
-          {i<6&&<div style={{position:"absolute",left:17,top:38,width:2,height:"calc(100% - 14px)",background:"var(--border)"}}/>}
+        {[{s:1,t:'Greet: "Hi {name}, thank you for contacting Match Tennis Support!"',c:"var(--green-light)"},{s:2,t:"Check tawk.to URL: matchtennisapp.com = MTA, matchtennisteam.com = MTT",c:"var(--amber-light)"},{s:3,t:"Search the Knowledge Base for the question.",c:"var(--blue-light)"},{s:4,t:'KB Only: Copy response into chat. Follow up if needed.',c:"var(--blue-light)"},{s:5,t:'DB Required: Open Admin Panel, look up account, take action.',c:"var(--amber-light)"},{s:6,t:"Create Ticket",c:"var(--purple-light)"}].map((s,i)=><div key={s.s} style={{display:"flex",gap:14,position:"relative"}}>
+          {i<5&&<div style={{position:"absolute",left:17,top:38,width:2,height:"calc(100% - 14px)",background:"var(--border)"}}/>}
           <div style={{width:36,height:36,borderRadius:10,display:"flex",alignItems:"center",justifyContent:"center",background:s.c,fontWeight:700,fontSize:14,flexShrink:0,zIndex:1,fontFamily:"'Outfit',sans-serif"}}>{s.s}</div>
           <div style={{flex:1,paddingBottom:18,fontSize:13,lineHeight:1.6,color:"var(--text2)",paddingTop:7}}>{s.t}</div>
         </div>)}

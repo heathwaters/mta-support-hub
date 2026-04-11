@@ -1,7 +1,28 @@
 {
-  "files_modified": [],
-  "review_completed": false,
-  "review_verdict": null,
-  "review_verdict_at": null,
-  "session_start": "2026-04-05T08:51:30.894268"
+  "files_modified": [
+    "/Users/lindsaywaters/Projects/mta-support-hub/lib/env.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/lib/cms.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/lib/db.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/lib/validate.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/app/api/mtt/actions/reset-password/route.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/app/api/mtt/actions/unlock/route.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/app/api/mtt/actions/sync-ntrp/route.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/app/api/mtt/actions/update-shirt/route.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/app/api/mtt/events/route.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/app/api/mtt/search/route.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/app/api/mta/search/route.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/lib/rate-limit.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/lib/audit.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/app/api/mtt/teams/route.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/lib/auth.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/app/api/mta/tournaments/route.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/app/api/mtt/actions/update-role/route.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/app/api/mta/account/route.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/app/api/mta/add-division/route.ts",
+    "/Users/lindsaywaters/Projects/mta-support-hub/app/api/mta/create-player/route.ts"
+  ],
+  "review_completed": true,
+  "review_verdict": "PASS",
+  "review_verdict_at": "2026-04-08T14:30:00.000000",
+  "session_start": "2026-04-08T06:51:40.759186"
 }
