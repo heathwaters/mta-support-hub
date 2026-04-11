@@ -303,7 +303,7 @@ export async function GET(req: Request) {
             dbg: `${rels.length} rels, fallback`,
           };
         } catch (e) {
-          return { entries: [] as { usta: string; div: string }[], dbg: "err:" + (e instanceof Error ? e.message : String(e)) };
+          return { entries: [] as { usta: string; div: string; relation: string }[], dbg: "err:" + (e instanceof Error ? e.message : String(e)) };
         }
       })(),
     ]);
