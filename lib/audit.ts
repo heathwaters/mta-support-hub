@@ -60,7 +60,11 @@ export async function logAudit(event: AuditEvent): Promise<void> {
     params: sanitized,
   };
 
-  // Structured JSON log — Vercel log drains and external SIEM can parse this
+  // AUDIT_SINK: intentional console.log — this is the canonical structured
+  // audit output consumed by Vercel log drains and external SIEMs.
+  // Do not remove or convert to another level; other routes emit console.info
+  // for lifecycle logs and console.error for failures, both of which are
+  // separate streams from the audit trail.
   console.log(JSON.stringify(logEntry));
 }
 

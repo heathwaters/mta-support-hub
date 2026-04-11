@@ -43,6 +43,19 @@ function getAdminClient() {
   return _adminClient;
 }
 
+/**
+ * Validate an arbitrary `app_metadata.role` value against the canonical role
+ * allow-list. Returns the validated role or the least-privilege default.
+ * Used by both `verifySession` and `middleware.ts` to enforce a single guard
+ * shape across the two auth entry points.
+ */
+export function validateRole(raw: unknown): Role {
+  if (typeof raw === "string" && (Object.values(ROLES) as string[]).includes(raw)) {
+    return raw as Role;
+  }
+  return ROLES.SUPPORT_AGENT;
+}
+
 // --- Session verification ---
 
 /**
@@ -63,13 +76,9 @@ export async function verifySession(req: Request): Promise<UserContext | null> {
 
     if (error || !user) return null;
 
-    // Extract role from app_metadata (server-side only — users cannot self-modify)
-    const role = (user.app_metadata?.role as Role) || ROLES.SUPPORT_AGENT;
-
-    // Validate role is a known value
-    if (!Object.values(ROLES).includes(role)) {
-      return { id: user.id, email: user.email ?? "", role: ROLES.SUPPORT_AGENT };
-    }
+    // Extract + validate role via the shared allow-list helper (server-side
+    // only — users cannot self-modify their app_metadata).
+    const role = validateRole(user.app_metadata?.role);
 
     return { id: user.id, email: user.email ?? "", role };
   } catch (e) {

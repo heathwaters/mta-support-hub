@@ -1,15 +1,53 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
+import { requireAuth, type UserContext } from "@/lib/auth";
+import { createAuditEvent, logAudit } from "@/lib/audit";
+import { checkRateLimit, classifyEndpoint } from "@/lib/rate-limit";
+import { safeRequestId } from "@/lib/validate";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// Fetches a user's teams and tournament registrations via direct MySQL
+/**
+ * GET /api/mtt/teams?usr_id=<int>
+ *
+ * Fetches a user's teams and tournament registrations via direct MySQL join.
+ * Returns two arrays: `tournTeams` (teams tied to a tournament) and `teams`
+ * (plain teams with no tournament). Plain teams are deduplicated because the
+ * LEFT JOINs against tournaments and participation can emit the same team row
+ * multiple times. The legacy CMS stored the co-captain role as both
+ * `"co-captain"` and `"cocaptain"`; both spellings are treated as co-captain.
+ */
 export async function GET(req: Request) {
+  const requestId = safeRequestId(req.headers.get("x-request-id"));
+  const startTime = Date.now();
+
+  const authResult = await requireAuth(req);
+  if (authResult instanceof NextResponse) return authResult;
+  const user: UserContext = authResult;
+
+  const rlCategory = classifyEndpoint(new URL(req.url).pathname, req.method);
+  const rlResult = await checkRateLimit(user.id, rlCategory);
+  if (rlResult) return rlResult;
+
+  const audit = createAuditEvent(req, user, requestId);
+  audit.action = "mtt-teams";
+  audit.piiAccessed = true;
+
   const url = new URL(req.url);
-  const usrId = Number(url.searchParams.get("usr_id"));
-  if (!usrId || !Number.isInteger(usrId) || usrId <= 0)
-    return NextResponse.json({ ok: false, error: "usr_id required" }, { status: 400 });
+  const usrIdRaw = url.searchParams.get("usr_id");
+  const usrId = Number(usrIdRaw);
+  if (!usrIdRaw || !Number.isInteger(usrId) || usrId <= 0) {
+    audit.responseStatus = 400;
+    audit.durationMs = Date.now() - startTime;
+    await logAudit(audit);
+    return NextResponse.json(
+      { ok: false, error: "usr_id must be a positive integer", code: "VALIDATION_ERROR", ref: requestId },
+      { status: 400 }
+    );
+  }
+
+  audit.targetUserId = usrId;
 
   try {
     // Get all teams + tournament info for this user
@@ -79,12 +117,18 @@ export async function GET(req: Request) {
         ),
       }));
 
-    // Deduplicate plain teams (same team may appear multiple times from joins)
+    // Deduplicate plain teams. Two dedup sources: (1) teams that also appear
+    // in tournTeams are excluded via `seenTeamIds`; (2) plain-plain duplicates
+    // (same team row emitted multiple times by the LEFT JOIN cartesian product)
+    // are collapsed via `seenPlainIds`. Both checks are O(1) Set lookups so
+    // the whole reduce is O(n) rather than O(n²).
     const seenTeamIds = new Set(tournTeams.map((t) => t.team_id));
+    const seenPlainIds = new Set<number>();
     const teams = rows
       .filter((r) => !r.tourn_id && !seenTeamIds.has(r.team_id))
       .reduce<typeof tournTeams>((acc, r) => {
-        if (!acc.find((t) => t.team_id === r.team_id)) {
+        if (!seenPlainIds.has(r.team_id)) {
+          seenPlainIds.add(r.team_id);
           acc.push({
             team_name: r.team_name,
             team_id: r.team_id,
@@ -98,6 +142,9 @@ export async function GET(req: Request) {
             tourn_start_date: null,
             tourn_end_date: null,
             tourn_reg_link: null,
+            tourn_director: null,
+            tourn_email: null,
+            tourn_website: null,
             is_registered: false,
             is_paid: false,
           });
@@ -105,9 +152,19 @@ export async function GET(req: Request) {
         return acc;
       }, []);
 
-    return NextResponse.json({ ok: true, teams, tournTeams });
+    audit.responseStatus = 200;
+    audit.durationMs = Date.now() - startTime;
+    await logAudit(audit);
+
+    return NextResponse.json({ ok: true, teams, tournTeams, ref: requestId });
   } catch (e) {
-    console.error("[mtt/teams]", e);
-    return NextResponse.json({ ok: false, error: "Failed to load team data." }, { status: 500 });
+    console.error(JSON.stringify({ type: "error", ref: requestId, endpoint: "mtt/teams", msg: e instanceof Error ? e.message : String(e) }));
+    audit.responseStatus = 500;
+    audit.durationMs = Date.now() - startTime;
+    await logAudit(audit);
+    return NextResponse.json(
+      { ok: false, error: "Failed to load team data.", code: "DATABASE_ERROR", ref: requestId },
+      { status: 500 }
+    );
   }
 }

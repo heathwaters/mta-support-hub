@@ -2,11 +2,28 @@
  * MySQL connection pools for MTA and MTT databases.
  *
  * All env vars are read from lib/env.ts (Zod-validated).
- * Pools are module-level singletons reused across requests in the same Node process.
+ * Pools are stored as globalThis singletons and initialized lazily on the
+ * first `query()` call so that `next build`'s page-data collection does not
+ * evaluate the pool factory before env vars are available.
  */
 
 import mysql from "mysql2/promise";
 import { env } from "@/lib/env";
+
+/**
+ * Validate that SSL is enforced for the given prefix in production.
+ * Extracted so it can be unit-tested without standing up a real pool.
+ * Throws with a clear error if SSL is disabled in a production environment.
+ */
+export function assertProductionSsl(
+  prefix: "MTA" | "MTT",
+  sslFlag: "true" | "false",
+  nodeEnv: string | undefined
+): void {
+  if (sslFlag === "false" && nodeEnv === "production") {
+    throw new Error(`${prefix}_MYSQL_SSL must be "true" in production`);
+  }
+}
 
 function pool(prefix: "MTA" | "MTT") {
   const host = prefix === "MTA" ? env.MTA_MYSQL_HOST : env.MTT_MYSQL_HOST;
@@ -17,9 +34,11 @@ function pool(prefix: "MTA" | "MTT") {
   const sslFlag = prefix === "MTA" ? env.MTA_MYSQL_SSL : env.MTT_MYSQL_SSL;
 
   // Production SSL guard: never allow unencrypted DB connections in production
-  if (sslFlag === "false" && process.env.NODE_ENV === "production") {
+  try {
+    assertProductionSsl(prefix, sslFlag, process.env.NODE_ENV);
+  } catch (e) {
     console.error(JSON.stringify({ type: "critical", msg: `${prefix} MySQL SSL disabled in production — refusing to connect` }));
-    throw new Error(`${prefix}_MYSQL_SSL must be "true" in production`);
+    throw e;
   }
 
   return mysql.createPool({
@@ -40,22 +59,37 @@ function pool(prefix: "MTA" | "MTT") {
   });
 }
 
-// Module-level singletons — reused across requests in the same Node process
+// Lazy module-level singletons — reused across requests in the same Node process.
+// Initialization is deferred until first query so that `next build`'s page-data
+// collection phase does not fail when env vars are missing or SSL is off locally.
 declare global {
   var __mtaPool: mysql.Pool | undefined;
   var __mttPool: mysql.Pool | undefined;
 }
 
-export const mtaPool = globalThis.__mtaPool ?? (globalThis.__mtaPool = pool("MTA"));
-export const mttPool = globalThis.__mttPool ?? (globalThis.__mttPool = pool("MTT"));
+export function getPool(db: "mta" | "mtt"): mysql.Pool {
+  if (db === "mta") {
+    return globalThis.__mtaPool ?? (globalThis.__mtaPool = pool("MTA"));
+  }
+  return globalThis.__mttPool ?? (globalThis.__mttPool = pool("MTT"));
+}
+
+/**
+ * Default per-query execution ceiling. `connectTimeout` on the pool only
+ * bounds connection establishment; without an execution ceiling a slow
+ * query can hang a serverless function up to the platform max duration.
+ * 10s gives headroom for complex joins while still failing fast.
+ */
+export const DEFAULT_QUERY_TIMEOUT_MS = 10_000;
 
 export async function query<T = unknown>(
   db: "mta" | "mtt",
   sql: string,
-  params: (string | number | null)[] = []
+  params: (string | number | null)[] = [],
+  timeoutMs: number = DEFAULT_QUERY_TIMEOUT_MS
 ): Promise<T[]> {
-  const p = db === "mta" ? mtaPool : mttPool;
-  const [rows] = await p.execute(sql, params);
+  const p = getPool(db);
+  const [rows] = await p.execute({ sql, timeout: timeoutMs }, params);
   return rows as T[];
 }
 

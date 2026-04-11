@@ -2,19 +2,26 @@ import { NextResponse } from "next/server";
 import { query, cleanQ, escapeLike } from "@/lib/db";
 import { requireAuth, type UserContext } from "@/lib/auth";
 import { createAuditEvent, logAudit } from "@/lib/audit";
+import { checkRateLimit, classifyEndpoint } from "@/lib/rate-limit";
+import { safeRequestId } from "@/lib/validate";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
-  const requestId = req.headers.get("x-request-id") || crypto.randomUUID();
+  const requestId = safeRequestId(req.headers.get("x-request-id"));
   const startTime = Date.now();
 
   const authResult = await requireAuth(req);
   if (authResult instanceof NextResponse) return authResult;
   const user: UserContext = authResult;
 
+  const rlCategory = classifyEndpoint(new URL(req.url).pathname, req.method);
+  const rlResult = await checkRateLimit(user.id, rlCategory);
+  if (rlResult) return rlResult;
+
   const audit = createAuditEvent(req, user, requestId);
+  audit.action = "mta-tournaments";
 
   const q = cleanQ(new URL(req.url).searchParams.get("q"));
   if (!q) {
@@ -48,7 +55,7 @@ export async function GET(req: Request) {
          tourn_city AS city,
          tourn_state AS state,
          director
-       FROM 2_Tournaments
+       FROM \`2_Tournaments\`
        WHERE tourn_usta_id = ?
           OR tournament_id = ?
           OR tourn_name LIKE ?
@@ -70,9 +77,9 @@ export async function GET(req: Request) {
     audit.durationMs = Date.now() - startTime;
     await logAudit(audit);
 
-    return NextResponse.json({ ok: true, data });
+    return NextResponse.json({ ok: true, data, ref: requestId });
   } catch (e) {
-    console.error("[mta/tournaments]", requestId, e);
+    console.error(JSON.stringify({ type: "error", ref: requestId, endpoint: "mta/tournaments", msg: e instanceof Error ? e.message : String(e) }));
     audit.responseStatus = 500;
     audit.durationMs = Date.now() - startTime;
     await logAudit(audit);

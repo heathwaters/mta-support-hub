@@ -3,12 +3,10 @@ import { cmsPost } from "@/lib/cms";
 import { requireAuth, ROLES, type UserContext } from "@/lib/auth";
 import { createAuditEvent, logAudit } from "@/lib/audit";
 import { checkRateLimit, classifyEndpoint } from "@/lib/rate-limit";
-import { safeRequestId, isValidUsrId, parseJsonBody } from "@/lib/validate";
+import { safeRequestId, isValidUsrId, parseJsonBody, VALID_ROLES, type ValidRole } from "@/lib/validate";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const VALID_ROLES = ["captain", "co-captain", "athlete"] as const;
 
 export async function POST(req: Request) {
   const requestId = safeRequestId(req.headers.get("x-request-id"));
@@ -42,14 +40,23 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "usr_id must be a positive integer", code: "VALIDATION_ERROR", ref: requestId }, { status: 400 });
   }
 
-  if (!team_id || !Number.isInteger(team_id) || team_id <= 0) {
+  // typeof narrows unknown → number so the subsequent comparisons type-check;
+  // Number.isInteger is not a TS type predicate, so `!team_id` alone would not narrow.
+  if (typeof team_id !== "number" || !Number.isInteger(team_id) || team_id <= 0) {
     audit.responseStatus = 400;
     audit.durationMs = Date.now() - startTime;
     await logAudit(audit);
     return NextResponse.json({ ok: false, error: "team_id must be a positive integer", code: "VALIDATION_ERROR", ref: requestId }, { status: 400 });
   }
 
-  if (!VALID_ROLES.includes(role as typeof VALID_ROLES[number])) {
+  if (typeof role !== "string") {
+    audit.responseStatus = 400;
+    audit.durationMs = Date.now() - startTime;
+    await logAudit(audit);
+    return NextResponse.json({ ok: false, error: "role must be a string", code: "VALIDATION_ERROR", ref: requestId }, { status: 400 });
+  }
+
+  if (!VALID_ROLES.includes(role as ValidRole)) {
     audit.responseStatus = 400;
     audit.durationMs = Date.now() - startTime;
     await logAudit(audit);
@@ -68,6 +75,8 @@ export async function POST(req: Request) {
     audit.responseStatus = 200;
     audit.durationMs = Date.now() - startTime;
     await logAudit(audit);
+
+    console.info(JSON.stringify({ type: "info", ref: requestId, endpoint: "mtt/actions/update-role", usr_id, team_id, role }));
 
     return NextResponse.json({ ok: true });
   } catch (e) {

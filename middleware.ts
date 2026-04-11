@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { validateRole } from "@/lib/auth";
 
 // Note: middleware runs in the Edge/Node runtime — keep imports lightweight.
-// We do NOT import lib/auth.ts here because middleware.ts has its own execution context.
-// Instead we inline the minimal verification logic needed.
+// We intentionally import only the pure `validateRole` helper from lib/auth
+// to guarantee a single source of truth for role allow-listing. The heavier
+// `verifySession` path is re-run inside route handlers via requireAuth.
 
 const PUBLIC_PATHS = ["/api/health", "/api/config"];
 
@@ -36,7 +38,7 @@ export async function middleware(req: NextRequest) {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !key) {
-    console.error("[middleware] Missing Supabase env vars");
+    console.error(JSON.stringify({ type: "error", endpoint: "middleware", msg: "Missing Supabase env vars (NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY)" }));
     return addSecurityHeaders(
       NextResponse.json(
         { ok: false, error: "internal error", code: "INTERNAL_ERROR" },
@@ -60,8 +62,9 @@ export async function middleware(req: NextRequest) {
     );
   }
 
-  // Extract role from app_metadata (server-side only — users cannot self-modify)
-  const role = user.app_metadata?.role || "support_agent";
+  // Extract + validate role from app_metadata via the shared allow-list
+  // helper (server-side only — users cannot self-modify their app_metadata).
+  const role = validateRole(user.app_metadata?.role);
 
   // --- RBAC: Write actions require support_admin or higher ---
   if (pathname.includes("/actions/")) {

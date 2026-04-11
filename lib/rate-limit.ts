@@ -20,23 +20,26 @@ interface RateLimitConfig {
   windowMs: number;
 }
 
-const LIMITS: Record<string, RateLimitConfig> = {
+const LIMITS = {
   search: { maxRequests: 30, windowMs: 60_000 },
   read: { maxRequests: 60, windowMs: 60_000 },
   write: { maxRequests: 10, windowMs: 60_000 },
   "write-sensitive": { maxRequests: 5, windowMs: 60_000 },
   unauthenticated: { maxRequests: 5, windowMs: 60_000 },
-};
+} as const satisfies Record<string, RateLimitConfig>;
 
-const _limiters: Record<string, Ratelimit> = {};
+export type RateLimitCategory = keyof typeof LIMITS;
 
-function getLimiter(category: string): Ratelimit | null {
+const _limiters: Partial<Record<RateLimitCategory, Ratelimit>> = {};
+
+function getLimiter(category: RateLimitCategory): Ratelimit | null {
   const redis = getRedis();
   if (!redis) return null;
 
-  if (_limiters[category]) return _limiters[category];
+  const cached = _limiters[category];
+  if (cached) return cached;
 
-  const config = LIMITS[category] || LIMITS.read;
+  const config = LIMITS[category];
   const limiter = new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(config.maxRequests, `${config.windowMs} ms`),
@@ -47,12 +50,30 @@ function getLimiter(category: string): Ratelimit | null {
 }
 
 /**
- * Classify an endpoint into a rate limit category.
+ * Classify an endpoint into a rate limit category. Order matters — more
+ * specific matches take precedence over the generic method-based fallback.
+ *
+ * Sensitive buckets (5/min):
+ *  - `/actions/reset-password` — password reset flow
+ *  - MTA admin write routes that mutate player data: create-player,
+ *    update-player, add-division, update-tournament-phone. These require
+ *    SUPPORT_ADMIN and write to production PII tables, so they share the
+ *    lower 5/min ceiling rather than the generic 10/min `write` bucket.
  */
-export function classifyEndpoint(pathname: string, method: string): string {
+export function classifyEndpoint(pathname: string, method: string): RateLimitCategory {
   if (pathname.includes("/actions/reset-password")) return "write-sensitive";
+  if (
+    pathname.includes("/mta/create-player") ||
+    pathname.includes("/mta/update-player") ||
+    pathname.includes("/mta/add-division") ||
+    pathname.includes("/mta/update-tournament-phone")
+  ) {
+    return "write-sensitive";
+  }
   if (pathname.includes("/actions/")) return "write";
-  if (pathname.includes("/search")) return "search";
+  // Match both `/search` (e.g. /api/mta/search) and `*-search` segments
+  // (e.g. /api/mta/player-search) so all search endpoints share the bucket.
+  if (/\/search(?:$|\/)|-search(?:$|\/)/.test(pathname)) return "search";
   if (method !== "GET") return "write";
   return "read";
 }
@@ -65,7 +86,7 @@ export function classifyEndpoint(pathname: string, method: string): string {
  */
 export async function checkRateLimit(
   identifier: string,
-  category: string
+  category: RateLimitCategory
 ): Promise<NextResponse | null> {
   const limiter = getLimiter(category);
   if (!limiter) {

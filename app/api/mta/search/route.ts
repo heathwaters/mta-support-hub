@@ -4,9 +4,12 @@ import { requireAuth, hasRole, ROLES, type UserContext } from "@/lib/auth";
 import { createAuditEvent, logAudit } from "@/lib/audit";
 import { checkRateLimit, classifyEndpoint } from "@/lib/rate-limit";
 import { safeRequestId } from "@/lib/validate";
+import { MTA_TYPE_LABELS, MTA_TYPE_LABEL_DEFAULT } from "@/lib/mta-constants";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+interface SavedEntry { usta: string; div: string; relation: string }
 
 function round2(n: number | null | undefined): string {
   if (n == null) return "";
@@ -28,6 +31,7 @@ export async function GET(req: Request) {
   if (rlResult) return rlResult;
 
   const audit = createAuditEvent(req, user, requestId);
+  audit.action = "mta-search";
   audit.piiAccessed = true;
 
   const q = cleanQ(new URL(req.url).searchParams.get("q"));
@@ -265,8 +269,9 @@ export async function GET(req: Request) {
           ).catch(() => [])
         : Promise.resolve([]),
 
-      // 7. Saved player+division: get raw playerRelations then match in 1_Players
-      (async () => {
+      // 7. Saved player+division: get raw playerRelations then match in 1_Players.
+      // `dbg` is server-internal only — consumers read `.entries`, dbg never reaches the response body.
+      (async (): Promise<{ entries: SavedEntry[]; dbg: string }> => {
         try {
           const rels = await query<{ pid: number; usta: string; relation: string }>(
             "mta",
@@ -274,7 +279,7 @@ export async function GET(req: Request) {
              FROM playerRelations WHERE playerrel_usr_id = ?`,
             [top.id]
           );
-          if (rels.length === 0) return { entries: [] as { usta: string; div: string; relation: string }[], dbg: "0 rels" };
+          if (rels.length === 0) return { entries: [] as SavedEntry[], dbg: "0 rels" };
 
           // Build relation map: usta -> relation (use first found)
           const relMap = new Map<string, string>();
@@ -303,7 +308,7 @@ export async function GET(req: Request) {
             dbg: `${rels.length} rels, fallback`,
           };
         } catch (e) {
-          return { entries: [] as { usta: string; div: string; relation: string }[], dbg: "err:" + (e instanceof Error ? e.message : String(e)) };
+          return { entries: [], dbg: "err:" + (e instanceof Error ? e.message : String(e)) };
         }
       })(),
     ]);
@@ -353,11 +358,9 @@ export async function GET(req: Request) {
              WHERE matchpart_tourn_id IN (${directedUstaIds.map(() => "?").join(",")})
                AND matchpart_playerusta_id > 0`,
             directedUstaIds
-          ).catch((e) => { console.error("[mp-query]", e instanceof Error ? e.message : e); return []; }),
+          ).catch((e) => { console.error(JSON.stringify({ type: "error", ref: requestId, endpoint: "mta/search:mp-query", msg: e instanceof Error ? e.message : String(e) })); return []; }),
         ])
       : [[], []];
-
-    console.log("[notCompleted-debug] directedUstaIds:", directedUstaIds.length, "drawFromMatches:", drawFromMatches.length, "drawFromParticipants:", drawFromParticipants.length);
 
     // Merge unique USTAs per tournament from both sources (normalize tourn_id to lowercase)
     const allEntryUstasByTourn = new Map<string, Set<string>>();
@@ -420,26 +423,15 @@ export async function GET(req: Request) {
     // Determine if user can see full PII
     const canSeeFullPii = hasRole(user, ROLES.SUPPORT_ADMIN);
 
-    const MTA_TYPE_LABELS: Record<number, string> = {
-      1: "Player",
-      2: "Parent",
-      3: "Tournament Director",
-      4: "Coach",
-      5: "Club Admin",
-      6: "Section Admin",
-      7: "District Admin",
-      10: "Super Admin",
-    };
-
     const result = accounts.map((a, i) => ({
       id: a.id,
       name: `${a.first} ${a.last}`.trim(),
-      email: a.email,
+      email: canSeeFullPii ? a.email : "",
       username: a.username || "",
       status: a.status,
-      role: MTA_TYPE_LABELS[a.reguser_type] || "Player",
-      city: a.city,
-      state: a.state,
+      role: MTA_TYPE_LABELS[a.reguser_type] || MTA_TYPE_LABEL_DEFAULT,
+      city: canSeeFullPii ? a.city : "",
+      state: canSeeFullPii ? a.state : "",
       created: a.created ?? null,
       verified: a.register_status === 1,
       adminNote: canSeeFullPii ? (a.admin_note || null) : null,
@@ -502,7 +494,6 @@ export async function GET(req: Request) {
         status: r.status,
       })) : [],
       directedTournaments: i === 0 ? directorTournaments.map((t) => {
-        const now = new Date().toISOString().split("T")[0];
         return {
           id: t.usta_id || "",
           name: t.name,

@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server";
 import { query } from "@/lib/db";
-import { requireAuth, type UserContext } from "@/lib/auth";
+import { requireAuth, hasRole, ROLES, type UserContext } from "@/lib/auth";
 import { createAuditEvent, logAudit } from "@/lib/audit";
+import { checkRateLimit, classifyEndpoint } from "@/lib/rate-limit";
+import { safeRequestId } from "@/lib/validate";
+import { MTA_TYPE_LABELS, MTA_TYPE_LABEL_DEFAULT } from "@/lib/mta-constants";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
-  const requestId = req.headers.get("x-request-id") || crypto.randomUUID();
+  const requestId = safeRequestId(req.headers.get("x-request-id"));
   const startTime = Date.now();
 
   // --- Auth ---
@@ -15,8 +18,15 @@ export async function GET(req: Request) {
   if (authResult instanceof NextResponse) return authResult;
   const user: UserContext = authResult;
 
+  const rlCategory = classifyEndpoint(new URL(req.url).pathname, req.method);
+  const rlResult = await checkRateLimit(user.id, rlCategory);
+  if (rlResult) return rlResult;
+
   const audit = createAuditEvent(req, user, requestId);
+  audit.action = "mta-account";
   audit.piiAccessed = true;
+
+  const canSeeFullPii = hasRole(user, ROLES.SUPPORT_ADMIN);
 
   const id = new URL(req.url).searchParams.get("id");
   if (!id || !/^\d+$/.test(id) || parseInt(id) > 2147483647) {
@@ -27,11 +37,6 @@ export async function GET(req: Request) {
   }
 
   try {
-    const MTA_TYPE_LABELS: Record<number, string> = {
-      1: "Player", 2: "Parent", 3: "Tournament Director", 4: "Coach",
-      5: "Club Admin", 6: "Section Admin", 7: "District Admin", 10: "Super Admin",
-    };
-
     const accounts = await query<{
       id: number; first: string; last: string; email: string; status: string;
       city: string; state: string; created: string | null; admin_note: string | null;
@@ -75,23 +80,24 @@ export async function GET(req: Request) {
 
     return NextResponse.json({
       ok: true,
+      ref: requestId,
       data: {
         id: a.id,
         name: `${a.first} ${a.last}`.trim(),
-        email: a.email,
+        email: canSeeFullPii ? a.email : "",
         username: usernameRows[0]?.username || "",
         status: a.status,
-        role: MTA_TYPE_LABELS[a.reguser_type] || "Player",
-        city: a.city,
-        state: a.state,
+        role: MTA_TYPE_LABELS[a.reguser_type] || MTA_TYPE_LABEL_DEFAULT,
+        city: canSeeFullPii ? a.city : "",
+        state: canSeeFullPii ? a.state : "",
         created: a.created ?? null,
         verified: a.register_status === 1,
-        adminNote: a.admin_note || null,
+        adminNote: canSeeFullPii ? (a.admin_note || null) : null,
         attempts: attempts[0]?.c ?? 0,
       },
     });
   } catch (e) {
-    console.error("[mta/account]", requestId, e);
+    console.error(JSON.stringify({ type: "error", ref: requestId, endpoint: "mta/account", msg: e instanceof Error ? e.message : String(e) }));
     audit.responseStatus = 500;
     audit.durationMs = Date.now() - startTime;
     await logAudit(audit);

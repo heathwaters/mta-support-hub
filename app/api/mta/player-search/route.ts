@@ -1,17 +1,13 @@
 import { NextResponse } from "next/server";
 import { query, cleanQ, escapeLike } from "@/lib/db";
-import { requireAuth, type UserContext } from "@/lib/auth";
+import { requireAuth, hasRole, ROLES, type UserContext } from "@/lib/auth";
 import { createAuditEvent, logAudit } from "@/lib/audit";
 import { checkRateLimit, classifyEndpoint } from "@/lib/rate-limit";
 import { safeRequestId } from "@/lib/validate";
+import { MTA_TYPE_LABELS, MTA_TYPE_LABEL_DEFAULT } from "@/lib/mta-constants";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const MTA_TYPE_LABELS: Record<number, string> = {
-  1: "Player", 2: "Parent", 3: "Tournament Director", 4: "Coach",
-  5: "Club Admin", 6: "Section Admin", 7: "District Admin", 10: "Super Admin",
-};
 
 function round2(n: number | null | undefined): string {
   if (n == null) return "";
@@ -31,7 +27,10 @@ export async function GET(req: Request) {
   if (rlResult) return rlResult;
 
   const audit = createAuditEvent(req, user, requestId);
+  audit.action = "mta-player-search";
   audit.piiAccessed = true;
+
+  const canSeeFullPii = hasRole(user, ROLES.SUPPORT_ADMIN);
 
   const q = cleanQ(new URL(req.url).searchParams.get("q"));
   if (!q) {
@@ -153,11 +152,11 @@ export async function GET(req: Request) {
       const next = {
         id: row.id,
         name: `${row.first || ""} ${row.last || ""}`.trim(),
-        email: row.email,
+        email: canSeeFullPii ? row.email : "",
         status: row.status,
-        role: MTA_TYPE_LABELS[row.reguser_type] || "Player",
-        city: row.city || "",
-        state: row.state || "",
+        role: MTA_TYPE_LABELS[row.reguser_type] || MTA_TYPE_LABEL_DEFAULT,
+        city: canSeeFullPii ? (row.city || "") : "",
+        state: canSeeFullPii ? (row.state || "") : "",
         relation: row.relation || "",
       };
       if (!existing || (!existing.relation && next.relation && next.relation !== "my players")) {
@@ -186,9 +185,9 @@ export async function GET(req: Request) {
     audit.durationMs = Date.now() - startTime;
     await logAudit(audit);
 
-    return NextResponse.json({ ok: true, data });
+    return NextResponse.json({ ok: true, data, ref: requestId });
   } catch (e) {
-    console.error("[mta/player-search]", requestId, e);
+    console.error(JSON.stringify({ type: "error", ref: requestId, endpoint: "mta/player-search", msg: e instanceof Error ? e.message : String(e) }));
     audit.responseStatus = 500;
     audit.durationMs = Date.now() - startTime;
     await logAudit(audit);

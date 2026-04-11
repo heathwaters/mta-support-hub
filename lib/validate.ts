@@ -18,6 +18,10 @@ export function isValidUsrId(v: unknown): v is number {
 /** T-shirt size allowlist — shared across routes that validate shirt sizes. */
 export const VALID_SIZES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"] as const;
 
+/** MTT team member role allowlist — shared across routes that validate role changes. */
+export const VALID_ROLES = ["captain", "co-captain", "athlete"] as const;
+export type ValidRole = (typeof VALID_ROLES)[number];
+
 /**
  * Safely parse JSON body with Content-Type and shape validation.
  * Returns 415 for non-JSON content types, rejects array bodies.

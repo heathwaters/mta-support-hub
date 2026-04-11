@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
-import { mtaPool, mttPool } from "@/lib/db";
+import { getPool } from "@/lib/db";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
   const checks = await Promise.all([
-    mtaPool.execute("SELECT 1").then(() => true).catch(() => false),
-    mttPool.execute("SELECT 1").then(() => true).catch(() => false),
+    getPool("mta").execute("SELECT 1").then(() => true).catch(() => false),
+    getPool("mtt").execute("SELECT 1").then(() => true).catch(() => false),
   ]);
 
   const [mta, mtt] = checks;

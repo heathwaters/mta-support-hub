@@ -23,6 +23,7 @@ export async function GET(req: Request) {
   if (rlResult) return rlResult;
 
   const audit = createAuditEvent(req, user, requestId);
+  audit.action = "mtt-events";
 
   const q = cleanQ(new URL(req.url).searchParams.get("q"));
   if (!q) {

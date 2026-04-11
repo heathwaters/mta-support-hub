@@ -1,16 +1,54 @@
 import { NextResponse } from "next/server";
 import { cmsPost } from "@/lib/cms";
+import { requireAuth, ROLES, type UserContext } from "@/lib/auth";
+import { createAuditEvent, logAudit } from "@/lib/audit";
+import { checkRateLimit, classifyEndpoint } from "@/lib/rate-limit";
+import { safeRequestId, parseJsonBody, isValidUsrId } from "@/lib/validate";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-// TODO: add Supabase session auth guard before production deployment
 export async function POST(req: Request) {
-  try {
-    const { usr_id } = await req.json();
-    if (!usr_id || typeof usr_id !== "number")
-      return NextResponse.json({ ok: false, error: "usr_id required" }, { status: 400 });
+  const requestId = safeRequestId(req.headers.get("x-request-id"));
+  const startTime = Date.now();
 
+  const authResult = await requireAuth(req, ROLES.SUPPORT_ADMIN);
+  if (authResult instanceof NextResponse) return authResult;
+  const user: UserContext = authResult;
+
+  const rlCategory = classifyEndpoint(new URL(req.url).pathname, req.method);
+  const rlResult = await checkRateLimit(user.id, rlCategory);
+  if (rlResult) return rlResult;
+
+  const audit = createAuditEvent(req, user, requestId);
+  audit.action = "mtt-sync-wtn";
+
+  const parsed = await parseJsonBody(req);
+  if (!parsed.data) {
+    audit.responseStatus = 400;
+    audit.durationMs = Date.now() - startTime;
+    await logAudit(audit);
+    return NextResponse.json(
+      { ok: false, error: parsed.error, code: "INVALID_JSON", ref: requestId },
+      { status: ("status" in parsed && parsed.status) || 400 }
+    );
+  }
+
+  const { usr_id } = parsed.data;
+
+  if (!isValidUsrId(usr_id)) {
+    audit.responseStatus = 400;
+    audit.durationMs = Date.now() - startTime;
+    await logAudit(audit);
+    return NextResponse.json(
+      { ok: false, error: "usr_id must be a positive integer", code: "VALIDATION_ERROR", ref: requestId },
+      { status: 400 }
+    );
+  }
+
+  audit.targetUserId = usr_id;
+
+  try {
     const data = await cmsPost<{ rating?: string; wtn?: string; data?: string }>(
       "mtt",
       "AdminMain",
@@ -19,9 +57,20 @@ export async function POST(req: Request) {
     );
 
     const rating = data?.rating || data?.wtn || data?.data || null;
-    return NextResponse.json({ ok: true, rating });
+
+    audit.responseStatus = 200;
+    audit.durationMs = Date.now() - startTime;
+    await logAudit(audit);
+
+    return NextResponse.json({ ok: true, rating, ref: requestId });
   } catch (e) {
-    console.error("[mtt/actions/sync-wtn]", e);
-    return NextResponse.json({ ok: false, error: "Failed to sync WTN rating." }, { status: 502 });
+    console.error(JSON.stringify({ type: "error", ref: requestId, endpoint: "mtt/actions/sync-wtn", msg: e instanceof Error ? e.message : String(e) }));
+    audit.responseStatus = 502;
+    audit.durationMs = Date.now() - startTime;
+    await logAudit(audit);
+    return NextResponse.json(
+      { ok: false, error: "Failed to sync WTN rating.", code: "CMS_ERROR", ref: requestId },
+      { status: 502 }
+    );
   }
 }
