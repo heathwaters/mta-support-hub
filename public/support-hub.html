@@ -35,8 +35,8 @@ const MTA_KB = [
   {id:1,c:"Password Reset / Login Issues",h:"LIVE",p:"Low",sc:"/mta-forgot-pw",
     q:`I forgot my password and cannot log in.`,cr:`I can help you get back into your account. To get started, I will need a few details so we can locate your account and send you a password reset link:
 
-1. Your first and last name associated with account
-2. The email address associated with your account
+1. USTA number associated with the account
+2. Username associated with the account
 
 Once I have this information, I can give you the reset password link.`,vr:`ADMIN PANEL STEPS:
 1. Ask customer for their email address
@@ -53,8 +53,8 @@ If the scripted response resolves it, no admin panel needed. Use admin panel onl
   {id:2,c:"Password Reset / Login Issues",h:"LIVE",p:"Low",sc:"/mta-reset-not-arriving",
     q:`I requested a password reset but the email never came through.`,cr:`I can help you get back into your account. To get started, I will need a few details so we can locate your account and send you a password reset link:
 
-1. Your first and last name associated with account
-2. The email address associated with your account
+1. USTA number associated with the account
+2. Username associated with the account
 
 Once I have this information, I can give you the reset password link.`,vr:`ADMIN PANEL STEPS:
 1. Ask customer for their email address
@@ -71,8 +71,8 @@ If the scripted response resolves it, no admin panel needed. Use admin panel onl
   {id:3,c:"Password Reset / Login Issues",h:"VA",p:"Medium",sc:"/mta-locked-out",
     q:`I am locked out of my account after too many failed login attempts.`,cr:`For your security, accounts lock after multiple failed attempts. I will need to collect some information so I can unlock your account:
 
-1. Your first and last name associated with your account
-2. The email address associated with your account
+1. USTA number associated with the account
+2. Username associated with the account
 
 Once I have this, I can unlock your account.`,vr:`ADMIN STEPS:
 1. Ask customer for their first/last name and email
@@ -89,8 +89,8 @@ If the account won't unlock, create a support ticket.`,es:`Create support ticket
   {id:4,c:"Password Reset / Login Issues",h:"LIVE",p:"Low",sc:"/mta-invalid-creds",
     q:`I reset my password but it still says invalid credentials when I try to log in.`,cr:`I can help you get back into your account. To get started, I will need a few details so we can locate your account and send you a password reset link:
 
-1. Your first and last name associated with account
-2. The email address associated with your account
+1. USTA number associated with the account
+2. Username associated with the account
 
 Once I have this information, I can give you the reset password link.`,vr:`ADMIN PANEL STEPS:
 1. Ask customer for their email address
@@ -120,8 +120,8 @@ Try the scripted troubleshooting steps first. Only go to admin panel if those do
 3. When did this start happening?`,at:`VA Agent handles with standard troubleshooting. If reinstall does not fix, Live Agent checks account data and escalates to tech team if needed.`},
   {id:7,c:"Password Reset / Login Issues",h:"VA",p:"Medium",sc:"/mta-two-accounts",
     q:`I have two accounts and cannot log into the correct one.`,cr:`I can help sort that out. For account merging, I will need to connect you with a support specialist who has access to our system to look up both accounts and combine them properly. If no agent then ask them for this information: Create Support Ticket- I can collect your information and have a specialist resend it for you. I will need:
-1. Your first and last name associated with both accounts
-2. The email address on both accounts
+1. USTA numbers for both accounts
+2. Usernames for both accounts
 3. The account that you would like to use moving forward`,vr:`ADMIN STEPS:
 1. Ask customer for both email addresses
 2. Search admin panel for both accounts to confirm they exist
@@ -129,8 +129,8 @@ Try the scripted troubleshooting steps first. Only go to admin panel if those do
 4. You CANNOT merge accounts yourself. Create a support ticket.
 
 TICKET NOTES: Include both email addresses, which account to keep as primary, and any relevant details about what data needs to be preserved.`,es:`Create support ticket. Collect: Create Support Ticket- I can collect your information and have a specialist merge accounts for you. I will need:
-1. Your first and last name associated with both accounts
-2. The email address on both accounts
+1. USTA numbers for both accounts
+2. Usernames for both accounts
 3. The account that you would like to keep as primary?`,fu:`1. What are the email addresses for both accounts?
 2. Which account has your active membership or tournament history?
 3. Would you like me to merge them into one account?`,at:`Account merging requires specialists.`},
@@ -163,8 +163,8 @@ The scripted response should handle most cases. Admin panel is backup.`,es:`N/A,
 3. Summary of Issue`,fu:``,at:`VA Agent handles general instructions. Live Agent only needed if there is a registration error or the tournament is not visible.`},
   {id:13,c:"Registration / Account Creation",h:"VA",p:"High",sc:"/mta-duplicate-acct",
     q:`I accidentally created two accounts. Can you merge them?`,cr:`Hi {name}, thank you for contacting Match Tennis Su. For account merging, I will need to connect you with a support specialist who has access to our system to look up both accounts and combine them properly. If no agent then ask them for this information: Create Support Ticket- I can collect your information and have a specialist resend it for you. I will need:
-1. Your first and last name associated with both accounts
-2. The email address on both accounts
+1. USTA numbers for both accounts
+2. Usernames for both accounts
 3. The account that you would like to use moving forward`,vr:`ADMIN STEPS:
 1. Ask customer for both email addresses
 2. Search admin panel for both accounts to confirm they exist
@@ -172,8 +172,8 @@ The scripted response should handle most cases. Admin panel is backup.`,es:`N/A,
 4. You CANNOT merge accounts yourself. Create a support ticket.
 
 TICKET NOTES: Include both emails, which to keep, and note which has more tournament history/data.`,es:`Create support ticket. Collect: Create Support Ticket- I can collect your information and have a specialist merge accounts for you. I will need:
-1. Your first and last name associated with both accounts?
-2. The email address on both accounts?
+1. USTA numbers for both accounts?
+2. Usernames for both accounts?
 3. The account that you would like to keep as primary?`,fu:`1. What are the email addresses for both accounts?
 2. Which account would you like to keep as the primary?
 3. Do both accounts have tournament history?`,at:`Requires admin panel. Always merge INTO the account with the active subscription. VA Agent cannot perform merges.`},
@@ -240,7 +240,7 @@ If UTR linking continues to fail, create a support ticket with the customer's em
 3. Summary of Issue                                                                      4. Player First and Last Name  and USTA Number`,fu:`1. What is your UTR ID or the email associated with your UTR account?
 2. What is your Match Tennis username or USTA number?`,at:`VA Agent provides self-service steps. If that fails, Live Agent links manually in admin panel.`},
   {id:21,c:"USTA / Ratings / UTR",h:"VA",p:"Medium",sc:"/mta-address-change",
-    q:`I moved to a new state but my address has not updated in Match Tennis.`,cr:`Our team will update this manually — please send the following so we can locate your account:\n1. First and Last Name Associated with account\n2. Email Associated with account\n3. Player First and Last Name\n4. Player USTA Number\n5. New City and State\n6. New District and Section\n\nYou will receive an email confirmation once the update is complete.`,vr:`ADMIN STEPS:
+    q:`I moved to a new state but my address has not updated in Match Tennis.`,cr:`Our team will update this manually — please send the following so we can locate your account:\n1. USTA number associated with the account\n2. Username associated with the account\n3. Player First and Last Name\n4. Player USTA Number\n5. New City and State\n6. New District and Section\n\nYou will receive an email confirmation once the update is complete.`,vr:`ADMIN STEPS:
 1. Ask customer for their name, email, and new city/state/district/section
 2. Search admin panel by email to locate the account
 3. You CANNOT update address/location yourself. Create a support ticket.
@@ -265,9 +265,9 @@ STEPS:
 5. Copy the ticket and submit
 6. Tell the customer: "I've created ticket #[number] for our billing team. They will review your account and follow up within 1 business day."
 
-Do NOT attempt to look up any payment or subscription information.`,es:`Create support ticket. Collect: We need the First and Last name and email associated with the account please and one of our specialist will cancel per your request. Upon cancellation you will receive and email confirmation.`,fu:`We need the First and Last name and email associated with the account please and one of our specialist will cancel per your request. Upon cancellation you will receive and email confirmation.`,at:`FINANCIAL ISSUE. You have zero access to billing, charges, payments, or subscription details. Create a ticket immediately and escalate to the billing team. Do not guess or provide billing information to the customer.`},
+Do NOT attempt to look up any payment or subscription information.`,es:`Create support ticket. Collect: We need the USTA number and Username associated with the account please and one of our specialist will cancel per your request. Upon cancellation you will receive and email confirmation.`,fu:`We need the USTA number and Username associated with the account please and one of our specialist will cancel per your request. Upon cancellation you will receive and email confirmation.`,at:`FINANCIAL ISSUE. You have zero access to billing, charges, payments, or subscription details. Create a ticket immediately and escalate to the billing team. Do not guess or provide billing information to the customer.`},
   {id:25,c:"Membership / Billing / Subscription",h:"VA",p:"High",sc:"/mta-refund-request",
-    q:`I was charged twice for my membership. Can I get a refund?`,cr:`I apologize for the inconvenience.  Can you provide the following information: First and Last Name, Email associated with account  and phone number associated with account and our team will reach out to you by the email provided.`,vr:`THIS IS A FINANCIAL/BILLING ISSUE. CREATE A SUPPORT TICKET IMMEDIATELY.
+    q:`I was charged twice for my membership. Can I get a refund?`,cr:`I apologize for the inconvenience.  Can you provide the following information: USTA number associated with the account, Username associated with the account  and phone number associated with account and our team will reach out to you by the email provided.`,vr:`THIS IS A FINANCIAL/BILLING ISSUE. CREATE A SUPPORT TICKET IMMEDIATELY.
 
 You do NOT have access to view charges, payment history, subscription billing details, or any financial information.
 
@@ -279,7 +279,7 @@ STEPS:
 5. Copy the ticket and submit
 6. Tell the customer: "I've created ticket #[number] for our billing team. They will review your account and follow up within 1 business day."
 
-Do NOT attempt to look up any payment or subscription information.`,es:`Create support ticket. Create support ticket and escalate to our team Can you provide the following information: First and Last Name, Email associated with account  and phone number associated with account.`,fu:`1. What email is on your account?
+Do NOT attempt to look up any payment or subscription information.`,es:`Create support ticket. Create support ticket and escalate to our team Can you provide the following information: USTA number associated with the account, Username associated with the account  and phone number associated with account.`,fu:`1. What email is on your account?
 2. Approximately when were you charged?
 3. Do you see both charges on your bank or credit card statement?`,at:`FINANCIAL ISSUE. You have zero access to billing, charges, payments, or subscription details. Create a ticket immediately and escalate to the billing team. Do not guess or provide billing information to the customer.`},
   {id:26,c:"Membership / Billing / Subscription",h:"LIVE",p:"High",sc:"/mta-billing-question",
@@ -355,7 +355,7 @@ Do NOT attempt to look up any payment or subscription information.`,es:`Create s
 2. Do you have an updated payment method ready?
 3. Were you in the middle of any tournament registrations?`,at:`FINANCIAL ISSUE. You have zero access to billing, charges, payments, or subscription details. Create a ticket immediately and escalate to the billing team. Do not guess or provide billing information to the customer.`},
   {id:29,c:"Membership / Billing / Subscription",h:"LIVE",p:"High",sc:"/mta-receipt",
-    q:`Can I get a receipt for my membership payment?`,cr:`You should have received a receipt via email when you made the payment.  I will need the following information:                                                             1.Your first and last name associated with account                                                2. The email address you registered with                                                               3. Phone number associated with account`,vr:`NO ADMIN PANEL NEEDED.
+    q:`Can I get a receipt for my membership payment?`,cr:`You should have received a receipt via email when you made the payment.  I will need the following information: 1. USTA number associated with the account 2. Username associated with the account                                                               3. Phone number associated with account`,vr:`NO ADMIN PANEL NEEDED.
 This is a self-service question. The scripted response has the steps.
 
 If the customer is having trouble with the self-service process, create a support ticket. You do NOT have access to billing or subscription data.`,es:`N/A, resend from admin.`,fu:`1. What email is on your account?
@@ -499,13 +499,13 @@ This is a how-to question. The scripted response covers it.
 If the customer can't find a specific player, go to Admin Panel > Account Search and try searching by name or USTA number to verify they exist in the system.`,es:`N/A, general information.`,fu:`1. Are you looking for a specific player?
 2. Do you have their USTA number?`,at:`VA Agent handles completely. General how-to question.`},
   {id:43,c:"Adding / Searching Players",h:"VA",p:"Medium",sc:"/mta-player-not-found",
-    q:`I am trying to add a player but they are not found in the system.`,cr:`If a player is not showing up in match tennis app I would need to escalate a support ticket and our team would need to manually add the player in our system. Could you provide the following information 1.First and Last Name Associated with account. 2. Email Associated with account 3. player first and last name, 4. USTA Number,5.  city and state, 6. primary age division 7.High school graduation year.`,vr:`ADMIN STEPS:
+    q:`I am trying to add a player but they are not found in the system.`,cr:`If a player is not showing up in match tennis app I would need to escalate a support ticket and our team would need to manually add the player in our system. Could you provide the following information 1. USTA number associated with the account. 2. Username associated with the account 3. player first and last name, 4. USTA Number,5.  city and state, 6. primary age division 7.High school graduation year.`,vr:`ADMIN STEPS:
 1. Ask customer for the player's full name, USTA number, city/state, and date of birth
 2. Search admin panel by name and/or USTA number
 3. Try alternate spellings or search by USTA number only
 4. If player truly does not exist in the system, create a support ticket to have them manually added.
 
-TICKET NOTES: Include player first/last name, USTA number, city/state, date of birth, primary age division, and high school graduation year.`,es:`Create support ticket. Collect: 1.First and Last Name Associated with account. 2. Email Associated with account 3. player first and last name, 4. USTA Number,  5.city and state, 6. primary age division 7.High school graduation year`,fu:`1. What is the player's full name?
+TICKET NOTES: Include player first/last name, USTA number, city/state, date of birth, primary age division, and high school graduation year.`,es:`Create support ticket. Collect: 1. USTA number associated with the account. 2. Username associated with the account 3. player first and last name, 4. USTA Number,  5.city and state, 6. primary age division 7.High school graduation year`,fu:`1. What is the player's full name?
 2. Do they have their USTA number?
 3. Are they a new player who may not have a player profile?`,at:`Live Agent can search by alternate criteria and create profiles if needed.`},
   {id:48,c:"General How-To Questions",h:"LIVE",p:"Low",sc:"/mta-contact-td",
@@ -551,20 +551,20 @@ TICKET NOTES: Include player name, tournament name, match date, opponent name, a
 3. What was the score?
 4. Was the score reported through the app?`,at:`Requires database access. Live Agent checks tournament records and adds missing match data.`},
   {id:52,c:"Missing Data / Not Showing",h:"VA",p:"Medium",sc:"/mta-tournament-gone",
-    q:`A tournament I was registered for has disappeared from the app.`,cr:`That should not happen. I will need to escalate this to our team. Can you provide the following information: Your first and last name associated with account                                               2. The email address you registered with 3. Tournament ID 4. Player First and Last Name 5. Players USTA Number`,vr:`ADMIN STEPS:
+    q:`A tournament I was registered for has disappeared from the app.`,cr:`That should not happen. I will need to escalate this to our team. Can you provide the following information: 1. USTA number associated with the account 2. Username associated with the account 3. Tournament ID 4. Player First and Last Name 5. Players USTA Number`,vr:`ADMIN STEPS:
 1. Ask customer for the tournament name and approximate dates
 2. Search admin panel by customer email to find their account
 3. Check their tournament registrations
 4. You CANNOT restore missing tournaments yourself. Create a support ticket.
 
-TICKET NOTES: Include player name, tournament name, dates, and registration confirmation if they have one. Could be tournament cancellation, data sync issue, or display error.`,es:`I will need to create a support ticket and escalate this to tech team. Can you provide the following information: Your first and last name associated with account  2. The email address you registered with 3. Tournament ID 4. Player First and Last Name 5. Players USTA Number`,fu:`I will need to create a support ticket and escalate this to tech team. Can you provide the following information: Your first and last name associated with account  2. The email address you registered with 3. Tournament ID 4. Player First and Last Name 5. Players USTA Number`,at:`Requires admin investigation. Could be tournament cancellation, rename, or system issue.`},
+TICKET NOTES: Include player name, tournament name, dates, and registration confirmation if they have one. Could be tournament cancellation, data sync issue, or display error.`,es:`I will need to create a support ticket and escalate this to tech team. Can you provide the following information: 1. USTA number associated with the account 2. Username associated with the account 3. Tournament ID 4. Player First and Last Name 5. Players USTA Number`,fu:`I will need to create a support ticket and escalate this to tech team. Can you provide the following information: 1. USTA number associated with the account 2. Username associated with the account 3. Tournament ID 4. Player First and Last Name 5. Players USTA Number`,at:`Requires admin investigation. Could be tournament cancellation, rename, or system issue.`},
   {id:53,c:"Missing Data / Not Showing",h:"VA",p:"Medium",sc:"/mta-stats-wrong",
-    q:`My win/loss record or statistics are incorrect.`,cr:`I will need to create a support ticket and escalate this to tech team. Can you provide the following information: Your first and last name associated with account  2. The email address you registered with  3. Player First and Last Name 4. Players USTA Number`,vr:`ADMIN STEPS:
+    q:`My win/loss record or statistics are incorrect.`,cr:`I will need to create a support ticket and escalate this to tech team. Can you provide the following information: 1. USTA number associated with the account 2. Username associated with the account  3. Player First and Last Name 4. Players USTA Number`,vr:`ADMIN STEPS:
 1. Ask customer for their player name and what they believe the correct record should be
 2. Search admin panel to check their current stats
 3. You CANNOT edit win/loss records yourself. Create a support ticket.
 
-TICKET NOTES: Include player name, what the system shows vs what they believe is correct, and any specific matches they think are wrong or missing.`,es:`Create support ticket. Collect: I will need to create a support ticket and escalate this to tech team. Can you provide the following information: Your first and last name associated with account  2. The email address you registered with  3. Player First and Last Name 4. Players USTA Number`,fu:`I will need to create a support ticket and escalate this to tech team. Can you provide the following information: Your first and last name associated with account  2. The email address you registered with  3. Player First and Last Name 4. Players USTA Number`,at:`Requires database access. Live Agent reviews and corrects match records.`},
+TICKET NOTES: Include player name, what the system shows vs what they believe is correct, and any specific matches they think are wrong or missing.`,es:`Create support ticket. Collect: I will need to create a support ticket and escalate this to tech team. Can you provide the following information: 1. USTA number associated with the account 2. Username associated with the account  3. Player First and Last Name 4. Players USTA Number`,fu:`I will need to create a support ticket and escalate this to tech team. Can you provide the following information: 1. USTA number associated with the account 2. Username associated with the account  3. Player First and Last Name 4. Players USTA Number`,at:`Requires database access. Live Agent reviews and corrects match records.`},
   {id:56,c:"Notifications / Alerts",h:"LIVE",p:"Low",sc:"/mta-not-getting-notifs",
     q:`I am not receiving any notifications from the app.`,cr:`There are a couple of reasons you may not be receiving notifications:
 
@@ -1121,8 +1121,8 @@ const MTT_KB = [
   {id:1,c:"Password Reset / Login Issues",h:"LIVE",p:"Low",sc:"/mtt-forgot-pw",
     q:`I forgot my password and cannot log in to Match Tennis Team.`,cr:`I can help you get back into your account. To get started, I will need a few details so we can locate your account and send you a password reset link:
 
-1. Your first and last name associated with account
-2. The email address associated with your account
+1. USTA number associated with the account
+2. Username associated with the account
 
 Once I have this information, I can give you the reset password link.`,vr:`ADMIN PANEL STEPS:
 1. Ask customer for their email address
@@ -1140,8 +1140,8 @@ If the scripted response resolves it, no admin panel needed. Use admin panel onl
   {id:2,c:"Password Reset / Login Issues",h:"VA",p:"Medium",sc:"/mtt-locked-out",
     q:`My account is locked after too many failed login attempts.`,cr:`For your security, accounts lock after multiple failed attempts. I will need to collect some information so I can unlock your account:
 
-1. Your first and last name associated with your account
-2. The email address associated with your account
+1. USTA number associated with the account
+2. Username associated with the account
 
 Once I have this, I can unlock your account.`,vr:`ADMIN STEPS:
 1. Ask customer for their first/last name and email
@@ -1159,8 +1159,8 @@ If the account won't unlock, create a support ticket.`,es:`Create support ticket
   {id:3,c:"Password Reset / Login Issues",h:"LIVE",p:"Low",sc:"/mtt-reset-not-arriving",
     q:`I requested a password reset but the email never arrived.`,cr:`I can help you get back into your account. To get started, I will need a few details so we can locate your account and send you a password reset link:
 
-1. Your first and last name associated with account
-2. The email address associated with your account
+1. USTA number associated with the account
+2. Username associated with the account
 
 Once I have this information, I can give you the reset password link.`,vr:`ADMIN STEPS:
 1. Ask customer for their email address

@@ -49,13 +49,18 @@ describe("support-hub content: entry id:21 (address change)", () => {
       expect(cr).toMatch(/\\n6\./);
     });
 
-    it("requests all 6 required fields", () => {
-      expect(cr).toMatch(/1\. First and Last Name Associated with account/);
-      expect(cr).toMatch(/2\. Email Associated with account/);
+    it("requests all 6 required fields (identity + payload)", () => {
+      expect(cr).toMatch(/1\. USTA number associated with the account/);
+      expect(cr).toMatch(/2\. Username associated with the account/);
       expect(cr).toMatch(/3\. Player First and Last Name/);
       expect(cr).toMatch(/4\. Player USTA Number/);
       expect(cr).toMatch(/5\. New City and State/);
       expect(cr).toMatch(/6\. New District and Section/);
+    });
+
+    it("does not ask for customer's first and last name or email (identity via USTA # + username only)", () => {
+      expect(cr).not.toMatch(/1\. First and Last Name Associated with account/);
+      expect(cr).not.toMatch(/2\. Email Associated with account/);
     });
 
     it("does not start with the per-entry {name} greeting (file convention)", () => {
@@ -92,13 +97,18 @@ describe("support-hub content: entry id:21 (address change)", () => {
       expect(cr.toLowerCase()).toContain("email confirmation");
     });
 
-    it("requests all 6 required fields", () => {
-      expect(cr).toMatch(/1\. First and Last Name Associated with account/);
-      expect(cr).toMatch(/2\. Email Associated with account/);
+    it("requests all 6 required fields (identity + payload)", () => {
+      expect(cr).toMatch(/1\. USTA number associated with the account/);
+      expect(cr).toMatch(/2\. Username associated with the account/);
       expect(cr).toMatch(/3\. Player First and Last Name/);
       expect(cr).toMatch(/4\. Player USTA Number/);
       expect(cr).toMatch(/5\. New City and State/);
       expect(cr).toMatch(/6\. New District and Section/);
+    });
+
+    it("does not ask for customer's first and last name or email (identity via USTA # + username only)", () => {
+      expect(cr).not.toMatch(/1\. First and Last Name Associated with account/);
+      expect(cr).not.toMatch(/2\. Email Associated with account/);
     });
   });
 });
