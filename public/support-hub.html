@@ -3665,14 +3665,68 @@ function AdminPanel({session}){
                   <button onClick={doTSearch} style={{padding:"10px 18px",border:"none",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:700,background:"var(--blue)",color:"#fff"}}>Search</button>
                 </div>
                 {tr && (
-                  <div className="fade-in" style={{marginTop:12,background:"var(--bg)",borderRadius:8,padding:12,border:"1px solid var(--border)"}}>
+                  <div className="fade-in" style={{marginTop:12,background:"var(--green-light)",borderRadius:8,padding:12,border:"1px solid rgba(45,106,79,.15)"}}>
                     {tr.demo && <div style={{fontSize:9,color:"var(--amber)",fontWeight:700,marginBottom:4}}>⚠️ Demo Data</div>}
-                    <div style={{fontSize:14,fontWeight:700,fontFamily:"'Outfit',sans-serif"}}>{tr.name}</div>
-                    <div style={{fontSize:12,color:"var(--text3)",marginTop:2}}>{tr.dates} · {tr.loc}</div>
-                    <div style={{fontSize:11,color:"var(--text2)",marginTop:4}}>Director: {tr.dir}</div>
-                    <button onClick={()=>{navigator.clipboard.writeText(tr.link);setMsg({t:"s",m:"Waiver link copied! Paste into tawk.to."})}}
-                      style={{marginTop:10,width:"100%",padding:10,border:"none",borderRadius:8,cursor:"pointer",fontSize:12,fontWeight:700,background:"var(--green)",color:"#fff"}}>📋 Copy Waiver Link</button>
-                    <div style={{marginTop:6,fontSize:10,color:"var(--text3)",fontFamily:"'JetBrains Mono',monospace",wordBreak:"break-all",background:"var(--card)",padding:6,borderRadius:4}}>{tr.link}</div>
+                    <div style={{display:"flex",alignItems:"flex-start",gap:10}}>
+                      <div style={{flex:1}}>
+                        <div style={{fontSize:14,fontWeight:700,fontFamily:"'Outfit',sans-serif",color:"var(--green-dark)"}}>{tr.name}</div>
+                        <div style={{fontSize:11,color:"var(--text2)",marginTop:2}}>
+                          <span style={{fontFamily:"'JetBrains Mono',monospace",fontSize:9,color:"var(--green-dark)",opacity:.7,marginRight:4}}>{tr.id}</span>
+                          {tr.loc}
+                        </div>
+                        <div style={{fontSize:11,color:"var(--text2)",marginTop:2}}>{tr.dates}</div>
+                        <div style={{fontSize:11,color:"var(--text2)",marginTop:2}}>Director: {tr.dir}</div>
+                      </div>
+                      <div style={{display:"flex",gap:4,alignItems:"center",flexShrink:0,flexWrap:"wrap",justifyContent:"flex-end"}}>
+                        <span style={{fontSize:9,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",padding:"2px 8px",borderRadius:10,background:(tr.applicants&&tr.applicants.length>0)?"rgba(45,106,79,.15)":"rgba(254,205,211,.3)",color:(tr.applicants&&tr.applicants.length>0)?"var(--green-dark)":"var(--rose)"}}>{tr.applicants?tr.applicants.length:0} waiver{(!tr.applicants||tr.applicants.length!==1)?"s":""}</span>
+                        {tr.ustaLink && <a href={tr.ustaLink} target="_blank" rel="noopener noreferrer" style={{padding:"4px 10px",border:"1px solid rgba(45,106,79,.3)",borderRadius:4,fontSize:10,fontWeight:700,color:"var(--green-dark)",textDecoration:"none",whiteSpace:"nowrap",fontFamily:"'Outfit',sans-serif",background:"rgba(255,255,255,.5)"}}>USTA Page ↗</a>}
+                        {tr.link && <button onClick={(e)=>{e.stopPropagation();navigator.clipboard.writeText(tr.link);setMsg({t:"s",m:"Waiver link copied! Paste into tawk.to."})}} style={{padding:"4px 10px",border:"none",borderRadius:4,cursor:"pointer",fontSize:10,fontWeight:700,background:"var(--green)",color:"#fff",whiteSpace:"nowrap",fontFamily:"'Outfit',sans-serif"}}>Copy Waiver</button>}
+                      </div>
+                    </div>
+                    {(tr.applicants&&tr.applicants.length>0||tr.notCompleted&&tr.notCompleted.length>0) && (
+                      <details style={{borderTop:"1px solid rgba(45,106,79,.15)",marginTop:8}}>
+                        <summary style={{padding:"4px 0",fontSize:9,fontWeight:600,color:"var(--green-dark)",cursor:"pointer",userSelect:"none"}}>View Waiver Status ({tr.applicants?tr.applicants.length:0} completed{tr.notCompleted&&tr.notCompleted.length>0?", "+tr.notCompleted.length+" pending":""})</summary>
+                        <div style={{padding:"4px 0 8px"}}>
+                          <input type="text" placeholder="Search players..." onChange={e=>{const d=e.target.closest("details");if(d){d.dataset.filter=e.target.value.toLowerCase();d.querySelectorAll("[data-player]").forEach(el=>{el.style.display=el.dataset.player.includes(d.dataset.filter)?"":"none"})}}}
+                            style={{width:"100%",padding:"5px 8px",border:"1px solid rgba(45,106,79,.2)",borderRadius:4,fontSize:10,outline:"none",boxSizing:"border-box",marginBottom:6,background:"rgba(255,255,255,.7)"}} />
+                          {tr.notCompleted&&tr.notCompleted.length>0 && (
+                            <div style={{marginBottom:8}}>
+                              <div style={{fontSize:9,fontWeight:700,color:"var(--rose)",textTransform:"uppercase",letterSpacing:".5px",marginBottom:4}}>Waiver Not Completed ({tr.notCompleted.length})</div>
+                              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:3}}>
+                                {tr.notCompleted.map((a,ai)=>(
+                                  <div key={"nc"+ai} data-player={(a.name+" "+a.event+" "+a.usta).toLowerCase()} style={{display:"flex",alignItems:"center",gap:6,padding:"3px 8px",borderRadius:4,background:"rgba(254,205,211,.3)",fontSize:10}}>
+                                    <span style={{width:8,height:8,borderRadius:"50%",background:"var(--rose)",flexShrink:0}}></span>
+                                    <div style={{flex:1,overflow:"hidden"}}>
+                                      <span style={{fontWeight:600,color:"var(--rose)"}}>{a.name}</span>
+                                      <span style={{color:"var(--text3)",marginLeft:4,fontSize:9}}>{a.event}</span>
+                                    </div>
+                                    <span style={{fontSize:8,fontFamily:"'JetBrains Mono',monospace",color:"var(--text3)"}}>{a.usta}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {tr.applicants&&tr.applicants.length>0 && (
+                            <div>
+                              <div style={{fontSize:9,fontWeight:700,color:"var(--green-dark)",textTransform:"uppercase",letterSpacing:".5px",marginBottom:4}}>Completed ({tr.applicants.length})</div>
+                              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:3}}>
+                                {tr.applicants.map((a,ai)=>(
+                                  <div key={ai} data-player={(a.name+" "+a.event+" "+a.usta).toLowerCase()} style={{display:"flex",alignItems:"center",gap:6,padding:"3px 8px",borderRadius:4,background:"rgba(255,255,255,.5)",fontSize:10}}>
+                                    <span style={{width:8,height:8,borderRadius:"50%",background:"var(--green)",flexShrink:0}}></span>
+                                    <div style={{flex:1,overflow:"hidden"}}>
+                                      <span style={{fontWeight:600,color:"var(--green-dark)"}}>{a.name}</span>
+                                      <span style={{color:"var(--text3)",marginLeft:4,fontSize:9}}>{a.event}</span>
+                                    </div>
+                                    <span style={{fontSize:8,fontFamily:"'JetBrains Mono',monospace",color:"var(--text3)"}}>{a.usta}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </details>
+                    )}
+                    <div style={{marginTop:6,fontSize:10,color:"var(--green-dark)",fontFamily:"'JetBrains Mono',monospace",wordBreak:"break-all",background:"rgba(255,255,255,.5)",padding:6,borderRadius:4,opacity:.7}}>{tr.link}</div>
                   </div>
                 )}
               </div>
