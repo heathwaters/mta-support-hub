@@ -49,7 +49,10 @@ export async function GET(req: Request) {
     const firstLike = isMultiWord ? `%${escapeLike(parts[0])}%` : null;
     const lastLike = isMultiWord ? `%${escapeLike(parts.slice(1).join(" "))}%` : null;
 
-    // 1. Account lookup — also find parent accounts linked to matching players
+    // 1. Account lookup — also find parent accounts linked to matching players.
+    // Note: the legacy `regUser` schema does not have a `reguser_username`
+    // column, so we return an empty string in the `username` field. If the
+    // column is added later, replace the literal with the column name.
     const accounts = await query<{
       id: number; first: string; last: string; email: string; username: string | null; status: string;
       city: string; state: string; created: string | null; admin_note: string | null;
@@ -57,7 +60,7 @@ export async function GET(req: Request) {
     }>(
       "mta",
       `SELECT reguser_id AS id, reguser_first AS first, reguser_last AS last,
-         reguser_email AS email, reguser_username AS username, reguser_status AS status,
+         reguser_email AS email, '' AS username, reguser_status AS status,
          reguser_city AS city, reguser_state AS state,
          reguser_create_time AS created, reguser_admin_note AS admin_note,
          reguser_register_status AS register_status,

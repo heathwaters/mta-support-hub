@@ -60,11 +60,8 @@ export async function GET(req: Request) {
     }
     const a = accounts[0];
 
-    const usernameRows = await query<{ username: string }>(
-      "mta",
-      `SELECT reguser_username AS username FROM regUser WHERE reguser_id = ? LIMIT 1`,
-      [id]
-    ).catch(() => [] as { username: string }[]);
+    // Legacy `regUser` schema has no `reguser_username` column; return empty.
+    const usernameRows: { username: string }[] = [];
 
     const attempts = await query<{ c: number }>(
       "mta",
