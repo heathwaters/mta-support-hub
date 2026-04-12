@@ -84,20 +84,29 @@ export function classifyEndpoint(pathname: string, method: string): RateLimitCat
  *
  * If Upstash Redis is not configured, rate limiting is disabled (dev mode).
  */
+// Track whether we've already warned about missing Redis this process —
+// we only want one log line per cold start, not one per request.
+let _warnedMissingRedis = false;
+
 export async function checkRateLimit(
   identifier: string,
   category: RateLimitCategory
 ): Promise<NextResponse | null> {
   const limiter = getLimiter(category);
   if (!limiter) {
-    if (process.env.NODE_ENV === "production") {
-      console.error(JSON.stringify({ type: "critical", msg: "Rate limiting disabled — Upstash Redis not configured in production" }));
-      return NextResponse.json(
-        { ok: false, error: "service unavailable", code: "RATE_LIMIT_UNAVAILABLE" },
-        { status: 503, headers: { "Retry-After": "60" } }
-      );
+    // Internal support tool: the only users are employed support staff with
+    // admin-issued Supabase accounts. Rate limiting is defense against abuse
+    // and does not protect against a compromised insider (the audit log does).
+    // When Redis is absent we log once per process and allow the request.
+    if (process.env.NODE_ENV === "production" && !_warnedMissingRedis) {
+      _warnedMissingRedis = true;
+      console.warn(JSON.stringify({
+        type: "warning",
+        endpoint: "lib/rate-limit",
+        msg: "Rate limiting disabled — Upstash Redis not configured; allowing requests",
+      }));
     }
-    return null; // No Redis configured — allow in dev
+    return null;
   }
 
   const { success, reset } = await limiter.limit(identifier);

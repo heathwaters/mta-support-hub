@@ -11,18 +11,19 @@ import mysql from "mysql2/promise";
 import { env } from "@/lib/env";
 
 /**
- * Validate that SSL is enforced for the given prefix in production.
- * Extracted so it can be unit-tested without standing up a real pool.
- * Throws with a clear error if SSL is disabled in a production environment.
+ * Detect whether the given prefix is running unencrypted in production.
+ * Returns true if SSL is disabled AND NODE_ENV is production. Extracted as
+ * a pure function so it can be unit-tested without standing up a real pool.
+ *
+ * Historically this function threw to refuse any unencrypted production
+ * connection. The legacy MTA/MTT MySQL hosts do not speak SSL, so the check
+ * is now informational only: callers log a warning instead of aborting.
  */
-export function assertProductionSsl(
-  prefix: "MTA" | "MTT",
+export function isProductionWithoutSsl(
   sslFlag: "true" | "false",
   nodeEnv: string | undefined
-): void {
-  if (sslFlag === "false" && nodeEnv === "production") {
-    throw new Error(`${prefix}_MYSQL_SSL must be "true" in production`);
-  }
+): boolean {
+  return sslFlag === "false" && nodeEnv === "production";
 }
 
 function pool(prefix: "MTA" | "MTT") {
@@ -33,12 +34,16 @@ function pool(prefix: "MTA" | "MTT") {
   const database = prefix === "MTA" ? env.MTA_MYSQL_DATABASE : env.MTT_MYSQL_DATABASE;
   const sslFlag = prefix === "MTA" ? env.MTA_MYSQL_SSL : env.MTT_MYSQL_SSL;
 
-  // Production SSL guard: never allow unencrypted DB connections in production
-  try {
-    assertProductionSsl(prefix, sslFlag, process.env.NODE_ENV);
-  } catch (e) {
-    console.error(JSON.stringify({ type: "critical", msg: `${prefix} MySQL SSL disabled in production — refusing to connect` }));
-    throw e;
+  // Informational: warn once per pool if we are talking to a legacy MySQL
+  // that does not support SSL from a production NODE_ENV. The upstream
+  // `readonly_user` grant + IP-restricted AWS security group is the intended
+  // defense layer here, not TLS.
+  if (isProductionWithoutSsl(sslFlag, process.env.NODE_ENV)) {
+    console.warn(JSON.stringify({
+      type: "warning",
+      endpoint: "lib/db",
+      msg: `${prefix} MySQL SSL disabled in production — upstream does not speak TLS, relying on read-only user + network ACLs`,
+    }));
   }
 
   return mysql.createPool({

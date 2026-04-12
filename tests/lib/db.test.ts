@@ -1,34 +1,30 @@
 import { describe, it, expect } from "vitest";
-import { cleanQ, escapeLike, assertProductionSsl } from "@/lib/db";
+import { cleanQ, escapeLike, isProductionWithoutSsl } from "@/lib/db";
 
-describe("assertProductionSsl", () => {
-  it("throws when SSL is false in production (MTA)", () => {
-    expect(() => assertProductionSsl("MTA", "false", "production")).toThrow(
-      /MTA_MYSQL_SSL must be "true" in production/
-    );
+describe("isProductionWithoutSsl", () => {
+  it("returns true when SSL is false in production", () => {
+    expect(isProductionWithoutSsl("false", "production")).toBe(true);
   });
 
-  it("throws when SSL is false in production (MTT)", () => {
-    expect(() => assertProductionSsl("MTT", "false", "production")).toThrow(
-      /MTT_MYSQL_SSL must be "true" in production/
-    );
+  it("returns false when SSL is true in production", () => {
+    expect(isProductionWithoutSsl("true", "production")).toBe(false);
   });
 
-  it("does not throw when SSL is true in production", () => {
-    expect(() => assertProductionSsl("MTA", "true", "production")).not.toThrow();
-    expect(() => assertProductionSsl("MTT", "true", "production")).not.toThrow();
+  it("returns false when SSL is false in development", () => {
+    expect(isProductionWithoutSsl("false", "development")).toBe(false);
   });
 
-  it("does not throw when SSL is false in development", () => {
-    expect(() => assertProductionSsl("MTA", "false", "development")).not.toThrow();
+  it("returns false when SSL is false in test", () => {
+    expect(isProductionWithoutSsl("false", "test")).toBe(false);
   });
 
-  it("does not throw when SSL is false in test", () => {
-    expect(() => assertProductionSsl("MTA", "false", "test")).not.toThrow();
+  it("returns false when NODE_ENV is undefined", () => {
+    expect(isProductionWithoutSsl("false", undefined)).toBe(false);
   });
 
-  it("does not throw when NODE_ENV is undefined", () => {
-    expect(() => assertProductionSsl("MTA", "false", undefined)).not.toThrow();
+  it("returns false when SSL is true regardless of environment", () => {
+    expect(isProductionWithoutSsl("true", "development")).toBe(false);
+    expect(isProductionWithoutSsl("true", undefined)).toBe(false);
   });
 });
 
