@@ -36,8 +36,8 @@ Once I have this information, I can give you the reset password link.`,vr:`ADMIN
 7. Copy the reset link
 8. Paste the reset link directly into the tawk.to chat for the customer
 
-If the scripted response resolves it, no admin panel needed. Use admin panel only if they still can't get in.`,es:`If the reset email fails to deliver after multiple attempts, create a support ticket: Create support ticket. Collect: First and Last Name Associated with Account, Email associated with account,  Issue summary. Assign to appropriate team based on issue category.`,fu:`1. What is your first and last name associated with account?
-2. What email address is associated with your account?`,at:`VA Agent collects first name, last name, email, and USTA number. VA Agent copies the reset password link from the Admin Panel and pastes it into the tawk.to chat. Once info is collected, VA Agent copies the reset password link from the Admin Panel and pastes it into the tawk.to chat.`},
+If the scripted response resolves it, no admin panel needed. Use admin panel only if they still can't get in.`,es:`If the reset email fails to deliver after multiple attempts, create a support ticket: Create support ticket. Collect: USTA number associated with the account, Username associated with the account, Issue summary. Assign to appropriate team based on issue category.`,fu:`1. What is the USTA number associated with the account?
+2. What is the username associated with the account?`,at:`VA Agent collects first name, last name, email, and USTA number. VA Agent copies the reset password link from the Admin Panel and pastes it into the tawk.to chat. Once info is collected, VA Agent copies the reset password link from the Admin Panel and pastes it into the tawk.to chat.`},
   {id:2,c:"Password Reset / Login Issues",h:"LIVE",p:"Low",sc:"/mta-reset-not-arriving",
     q:`I requested a password reset but the email never came through.`,cr:`Hi {name}, thank you for contacting Match Tennis Support! I can help you get back into your account. To get started, I will need a few details so we can locate your account and send you a password reset link:
 
@@ -54,8 +54,8 @@ Once I have this information, I can give you the reset password link.`,vr:`ADMIN
 7. Copy the reset link
 8. Paste the reset link directly into the tawk.to chat for the customer
 
-If the scripted response resolves it, no admin panel needed. Use admin panel only if they still can't get in.`,es:`If manual reset from admin panel also fails to deliver, Create support ticket. Collect: First and Last Name and Email associated with the account, Issue summary. Assign to appropriate team based on issue category.`,fu:`1. What is your first and last name?
-2. What email address is on your account?`,at:`iCloud and corporate email filters commonly block automated emails. VA Agent collects info and creates ticket. Live Agent resets manually from admin panel.`},
+If the scripted response resolves it, no admin panel needed. Use admin panel only if they still can't get in.`,es:`If manual reset from admin panel also fails to deliver, Create support ticket. Collect: USTA number and Username associated with the account, Issue summary. Assign to appropriate team based on issue category.`,fu:`1. What is the USTA number associated with the account?
+2. What is the username associated with the account?`,at:`iCloud and corporate email filters commonly block automated emails. VA Agent collects info and creates ticket. Live Agent resets manually from admin panel.`},
   {id:3,c:"Password Reset / Login Issues",h:"VA",p:"Medium",sc:"/mta-locked-out",
     q:`I am locked out of my account after too many failed login attempts.`,cr:`Hi {name}, thank you for contacting Match Tennis Support! For your security, accounts lock after multiple failed attempts. I will need to collect some information so I can unlock your account:
 
@@ -72,8 +72,8 @@ Once I have this, I can unlock your account.`,vr:`ADMIN STEPS:
 7. Copy the reset link and paste it into the tawk.to chat
 8. Tell the customer: "I've cleared your login attempts and sent a password reset link to your email. You can also use this direct link: [paste link]"
 
-If the account won't unlock, create a support ticket.`,es:`Create support ticket. Collect: First and Last Name associated with account, Email associated with account, Issue summary.`,fu:`1. What is your first and last name associated with account?
-2. What email address is associated on your account?`,at:`Requires admin panel access to unlock. VA Agent collects info and creates ticket. Live Agent unlocks from admin panel.`},
+If the account won't unlock, create a support ticket.`,es:`Create support ticket. Collect: USTA number associated with the account, Username associated with the account, Issue summary.`,fu:`1. What is the USTA number associated with the account?
+2. What is the username associated with the account?`,at:`Requires admin panel access to unlock. VA Agent collects info and creates ticket. Live Agent unlocks from admin panel.`},
   {id:4,c:"Password Reset / Login Issues",h:"LIVE",p:"Low",sc:"/mta-invalid-creds",
     q:`I reset my password but it still says invalid credentials when I try to log in.`,cr:`Hi {name}, thank you for contacting Match Tennis Support! I can help you get back into your account. To get started, I will need a few details so we can locate your account and send you a password reset link:
 
@@ -147,7 +147,7 @@ The scripted response should handle most cases. Admin panel is backup.`,es:`N/A,
 3. Search by Tournament ID to verify it exists and registration is open
 4. Copy the waiver link if they need it
 5. If registration errors persist, create a support ticket with: customer name, email, USTA number, tournament ID, and error details`,es:`If registration errors persist, Create support ticket. Collect: I will need the following to have a specialist resend it:
-1. Your first and last name associated with account                                               2. The email address you registered with
+1. USTA number associated with the account                                               2. Username associated with the account
 3. Summary of Issue`,fu:``,at:`VA Agent handles general instructions. Live Agent only needed if there is a registration error or the tournament is not visible.`},
   {id:13,c:"Registration / Account Creation",h:"VA",p:"High",sc:"/mta-duplicate-acct",
     q:`I accidentally created two accounts. Can you merge them?`,cr:`Hi {name}, thank you for contacting Match Tennis Su. For account merging, I will need to connect you with a support specialist who has access to our system to look up both accounts and combine them properly. If no agent then ask them for this information: Create Support Ticket- I can collect your information and have a specialist resend it for you. I will need:
@@ -177,7 +177,7 @@ If the error continues, I can connect you with a specialist who can register you
 3. Search by Tournament ID to verify it exists and registration is open
 4. Copy the waiver link if they need it
 5. If registration errors persist, create a support ticket with: customer name, email, USTA number, tournament ID, and error details`,es:`If registration errors persist, Create support ticket. Collect: I will need the following to have a specialist resend it:
-1. Your first and last name associated with account                                               2. The email address you registered with
+1. USTA number associated with the account                                               2. Username associated with the account
 3. Summary of Issue`,fu:`1. What error message are you seeing?
 2. Are you registering through the app or the website?
 3. What tournament and division are you trying to register for?`,at:`VA Agent provides troubleshooting. Live Agent can complete registration from admin panel if self-service fails.`},
@@ -188,7 +188,7 @@ If the error continues, I can connect you with a specialist who can register you
 3. Search by Tournament ID to verify it exists and registration is open
 4. Copy the waiver link if they need it
 5. If registration errors persist, create a support ticket with: customer name, email, USTA number, tournament ID, and error details`,es:`If registration errors persist, Create support ticket. Collect: I will need the following to have a specialist resend it:
-1. Your first and last name associated with account                                               2. The email address you registered with
+1. USTA number associated with the account                                               2. Username associated with the account
 3. Summary of Issue`,fu:``,at:`VA Agent handles general instructions. If the tournament does not support multi-event registration, Live Agent may need to assist.`},
   {id:16,c:"USTA / Ratings / UTR",h:"LIVE",p:"Low",sc:"/mta-ranking-wrong",
     q:`My ranking does not match what is showing on the USTA website.`,cr:`Hi {name}, thank you for contacting Match Tennis Support! Our rankings sync with USTA data daily, but sometimes there can be a short delay, especially after a recent tournament. If the discrepancy has been there for more than 48 hours, I can connect you with a specialist who can investigate further.`,vr:`ADMIN PANEL STEPS:
@@ -206,7 +206,7 @@ This is a general information question. The scripted response covers it.
 
 If the customer has a specific rating that seems wrong, THEN go to:
 Admin Panel > Account Search > Find their player > Click "Update UTR Rating" to trigger a resync.`,es:`If UTR discrepancy persists, Create support ticket. Collect: 
-1. Your first and last name associated with account                                               2. The email address you registered with
+1. USTA number associated with the account                                               2. Username associated with the account
 3. Player First and Last Name  and USTA Number`,fu:`1. Is there a specific player whose UTR needs to be updated?`,at:`VA Agent handles the general question. Live Agent needed only if there is a persistent discrepancy.`},
   {id:19,c:"USTA / Ratings / UTR",h:"VA",p:"Medium",sc:"/mta-link-utr",
     q:`How do I link my UTR account to Match Tennis?`,cr:`Hi {name}, thank you for contacting Match Tennis Support! You can link your UTR by clicking My Account:
@@ -224,7 +224,7 @@ If you are having trouble, I can connect you with a specialist who can link it m
 6. Verify the UTR data appears after the resync
 
 If UTR linking continues to fail, create a support ticket with the customer's email and UTR ID.`,es:`If linking fails due to system issue, Create support ticket. Collect: 
-1. Your first and last name associated with account                                               2. The email address you registered with
+1. USTA number associated with the account                                               2. Username associated with the account
 3. Summary of Issue                                                                      4. Player First and Last Name  and USTA Number`,fu:`1. What is your UTR ID or the email associated with your UTR account?
 2. What is your Match Tennis username or USTA number?`,at:`VA Agent provides self-service steps. If that fails, Live Agent links manually in admin panel.`},
   {id:21,c:"USTA / Ratings / UTR",h:"VA",p:"Medium",sc:"/mta-address-change",
@@ -233,7 +233,7 @@ If UTR linking continues to fail, create a support ticket with the customer's em
 2. Search admin panel by email to locate the account
 3. You CANNOT update address/location yourself. Create a support ticket.
 
-TICKET NOTES: Include current address info and new address info (city, state, district, section).`,es:`Create support ticket. collect 1. First and Last Name Associated with account 2. Email Associated with account 3. Player First and Last Name 4. Player USTA Number 5. New City and State 6. New District and Section`,fu:`1. What is your new city and state? District and Section?
+TICKET NOTES: Include current address info and new address info (city, state, district, section).`,es:`Create support ticket. collect 1. USTA number associated with the account 2. Username associated with the account 3. Player First and Last Name 4. Player USTA Number 5. New City and State 6. New District and Section`,fu:`1. What is your new city and state? District and Section?
 2. Have you already updated your on usta.com?
 3. What is your USTA number?`,at:`Requires database change. Live Agent updates in admin panel and reminds about section ranking changes. If the customer already provided any of the six fields in the canned response, delete those lines before pasting.`},
   {id:24,c:"Membership / Billing / Subscription",h:"VA",p:"High",sc:"/mta-cancel-sub",
@@ -856,8 +856,8 @@ I can change your account's privacy, just let me know if you'd still like to go 
 6. Confirm the change was made
 7. Tell the customer: "Your account has been set to private. Please remember this cannot be reversed for at least 6 months."
 
-IMPORTANT: Always get confirmation BEFORE making the change. Many customers change their mind once they hear about the 6 month lock.`,es:`Create support ticket if you do not have access to change privacy settings.`,fu:`1. What is your first and last name associated with account?
-2. What email is associated with your account?
+IMPORTANT: Always get confirmation BEFORE making the change. Many customers change their mind once they hear about the 6 month lock.`,es:`Create support ticket if you do not have access to change privacy settings.`,fu:`1. What is the USTA number associated with the account?
+2. What is the username associated with the account?
 3. Just to confirm, you understand that going private means you will not be able to view other player's schedules, and you cannot change back for at least 6 months. Would you still like to proceed?`,at:`Requires admin panel change. ALWAYS confirm with the customer before making this change because of the 6 month lock. Some parents change to private then immediately want to go back and we cannot reverse it. Make sure they clearly understand both restrictions before you flip the setting.`},
   {id:91,c:"Brackets / Draw / Seeding",h:"LIVE",p:"Low",sc:"/withdraw",
     q:`How do I withdraw from a USTA tournament?`,cr:`Hi {name}, thank you for contacting Match Tennis Support! To withdraw from a USTA tournament:
@@ -1123,8 +1123,8 @@ Once I have this information, I can give you the reset password link.`,vr:`ADMIN
 7. Copy the reset link
 8. Paste the reset link directly into the tawk.to chat for the customer
 
-If the scripted response resolves it, no admin panel needed. Use admin panel only if they still can't get in.`,es:`If reset email fails after multiple attempts, Create support ticket. Collect: Name, Email, Player's name, City, State, USTA number, Issue summary.`,fu:`1. What is your first and last name?
-2. What email address is associated with your account?
+If the scripted response resolves it, no admin panel needed. Use admin panel only if they still can't get in.`,es:`If reset email fails after multiple attempts, Create support ticket. Collect: Name, Email, Player's name, City, State, USTA number, Issue summary.`,fu:`1. What is the USTA number associated with the account?
+2. What is the username associated with the account?
 3. What is your USTA number?`,at:`VA Agent collects first name, last name, email, and USTA number. VA Agent copies the reset password link from the Admin Panel and pastes it into the tawk.to chat. Once info is collected, VA Agent creates a ticket for the Live Agent to process the reset.`},
   {id:2,c:"Password Reset / Login Issues",h:"VA",p:"Medium",sc:"/mtt-locked-out",
     q:`My account is locked after too many failed login attempts.`,cr:`Hi {name}, thank you for contacting Match Tennis Support! For your security, accounts lock after multiple failed attempts. I will need to collect some information so I can unlock your account:
@@ -1141,8 +1141,8 @@ Once I have this, I can unlock your account.`,vr:`ADMIN STEPS:
 6. Copy the reset link and paste into tawk.to chat
 7. Tell the customer: "I've cleared your login attempts and sent a password reset link. Here's the direct link: [paste link]"
 
-If the account won't unlock, create a support ticket.`,es:`Create support ticket. Collect: Name, Email, Player's name, City, State, USTA number, Issue summary. Assign to appropriate team based on issue category.`,fu:`1. What is your first and last name?
-2. What email address is on your account?
+If the account won't unlock, create a support ticket.`,es:`Create support ticket. Collect: Name, Email, Player's name, City, State, USTA number, Issue summary. Assign to appropriate team based on issue category.`,fu:`1. What is the USTA number associated with the account?
+2. What is the username associated with the account?
 3. What is your USTA number?
 4. Are you a team captain or player?`,at:`Requires admin panel access. VA Agent collects info and creates ticket. Live Agent unlocks from admin panel.`},
   {id:3,c:"Password Reset / Login Issues",h:"LIVE",p:"Low",sc:"/mtt-reset-not-arriving",
@@ -1159,8 +1159,8 @@ Once I have this information, I can give you the reset password link.`,vr:`ADMIN
 5. Copy the reset link that is generated
 6. Paste the link into tawk.to chat: "I've sent a fresh reset link to your email. You can also click this direct link: [paste link]"
 
-If the email keeps failing to deliver, ask for an alternate email. Create a support ticket if manual reset also fails.`,es:`If manual reset also fails, Create support ticket. Collect: Name, Email, Player's name, City, State, USTA number, Issue summary. Assign to appropriate team based on issue category.`,fu:`1. What is your first and last name?
-2. What email address is on your account?
+If the email keeps failing to deliver, ask for an alternate email. Create a support ticket if manual reset also fails.`,es:`If manual reset also fails, Create support ticket. Collect: Name, Email, Player's name, City, State, USTA number, Issue summary. Assign to appropriate team based on issue category.`,fu:`1. What is the USTA number associated with the account?
+2. What is the username associated with the account?
 3. What is your USTA number?
 4. What email provider do you use?`,at:`VA Agent cannot resend reset emails. VA Agent collects info and creates ticket. Live Agent does manual reset from admin panel.`},
   {id:4,c:"Registration / Account Creation",h:"LIVE",p:"Low",sc:"/mtt-how-register",
