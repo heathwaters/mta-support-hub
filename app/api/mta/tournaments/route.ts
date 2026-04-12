@@ -43,6 +43,8 @@ export async function GET(req: Request) {
       city: string;
       state: string;
       director: string;
+      director_email: string;
+      director_phone: string;
     }>(
       "mta",
       `SELECT
@@ -54,7 +56,9 @@ export async function GET(req: Request) {
          tourn_date_end AS date_end,
          tourn_city AS city,
          tourn_state AS state,
-         director
+         director,
+         director_email,
+         director_phone
        FROM \`2_Tournaments\`
        WHERE tourn_usta_id = ?
           OR tournament_id = ?
@@ -170,6 +174,8 @@ export async function GET(req: Request) {
       dates: `${r.date_start} — ${r.date_end}`,
       loc: [r.city, r.state].filter(Boolean).join(", "),
       dir: r.director || "",
+      directorEmail: r.director_email || "",
+      directorPhone: r.director_phone || "",
       link: r.tournament_id ? `https://www.matchtennisapp.com/baseapp/checkin?tid=${r.tournament_id}` : "",
       ustaLink: r.usta_id ? `https://playtennis.usta.com/competitions/${r.usta_id}` : "",
       applicants: r.usta_id

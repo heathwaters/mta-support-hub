@@ -2466,6 +2466,7 @@ function AdminPanel({session}){
         upcoming:(prev.upcoming||[]).map(w=>w.tournId===tournId?{...w,directorPhone:j.phone}:w),
         waivers:(prev.waivers||[]).map(w=>w.tournId===tournId?{...w,directorPhone:j.phone}:w)
       }:prev);
+      setTr(prev=>prev&&prev.id===tournId?{...prev,directorPhone:j.phone}:prev);
       setPhEdit(prev=>{const n={...prev};delete n[tournId];return n});
       setMsg({t:"s",m:"Director phone updated."});
     }catch(e){
@@ -3676,6 +3677,16 @@ function AdminPanel({session}){
                         </div>
                         <div style={{fontSize:11,color:"var(--text2)",marginTop:2}}>{tr.dates}</div>
                         <div style={{fontSize:11,color:"var(--text2)",marginTop:2}}>Director: {tr.dir}</div>
+                        {tr.directorEmail && <div style={{fontSize:10,color:"var(--text3)",marginTop:1}}>{tr.directorEmail}</div>}
+                        <div style={{display:"flex",gap:6,alignItems:"center",marginTop:4}}>
+                          <input type="tel" value={phEdit[tr.id]??tr.directorPhone??""}
+                            onChange={(e)=>setPhEdit({...phEdit,[tr.id]:e.target.value})}
+                            placeholder="(no phone set)"
+                            style={{flex:1,padding:"4px 8px",border:"1px solid rgba(45,106,79,.3)",borderRadius:4,fontSize:11,fontFamily:"'JetBrains Mono',monospace",outline:"none",background:"#fff",color:"var(--text)",maxWidth:160}} />
+                          <button onClick={()=>saveTournPhone(tr.id)}
+                            disabled={phSaving===tr.id||(phEdit[tr.id]??tr.directorPhone??"")===(tr.directorPhone||"")}
+                            style={{padding:"4px 12px",border:"none",borderRadius:4,cursor:phSaving===tr.id?"wait":"pointer",fontSize:10,fontWeight:700,background:"var(--green)",color:"#fff",opacity:(phSaving===tr.id||(phEdit[tr.id]??tr.directorPhone??"")===(tr.directorPhone||""))?.5:1,fontFamily:"'Outfit',sans-serif"}}>{phSaving===tr.id?"Saving…":"Save"}</button>
+                        </div>
                       </div>
                       <div style={{display:"flex",gap:4,alignItems:"center",flexShrink:0,flexWrap:"wrap",justifyContent:"flex-end"}}>
                         <span style={{fontSize:9,fontWeight:700,fontFamily:"'JetBrains Mono',monospace",padding:"2px 8px",borderRadius:10,background:(tr.applicants&&tr.applicants.length>0)?"rgba(45,106,79,.15)":"rgba(254,205,211,.3)",color:(tr.applicants&&tr.applicants.length>0)?"var(--green-dark)":"var(--rose)"}}>{tr.applicants?tr.applicants.length:0} waiver{(!tr.applicants||tr.applicants.length!==1)?"s":""}</span>
