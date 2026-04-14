@@ -872,6 +872,24 @@ If the tournament is also missing from all match results on the USTA site, you w
 Start with the scripted response. Only use admin if there's a specific data issue.`,es:`If the tournament IS showing on USTA but NOT in our app, create a support ticket for a data sync investigation.`,fu:`1. What is the player name and USTA number?
 2. Which tournament are you looking for?
 3. Have you checked if it appears on the USTA website directly?`,at:`This is a very common question from parents. The key point is that USTA only counts the TOP 6 tournament results for rankings. If a tournament result was not in the player's top 6, it will not appear. Our data mirrors USTA exactly. Direct them to check USTA.com first.`},
+  {id:104,c:"USTA / Ratings / UTR",h:"LIVE",p:"Low",sc:"/mta-rankings-calculated",
+    q:`How are rankings calculated?`,cr:`The current USTA ranking system includes a player's top 6 singles and top 6 doubles tournament results, made up of points from junior tournaments on a rolling 52-week basis.
+
+The combined rankings (the rankings used by USTA most often for tournament acceptance) are derived by calculating a player's top 6 singles result points combined with 15% of the player's top 6 doubles result points, plus any bonus points obtained.
+
+In short:
+- Singles: best 6 singles results in the last 52 weeks
+- Doubles: best 6 doubles results in the last 52 weeks
+- Combined ranking = singles points + (15% × doubles points) + bonus points
+
+This combined total is what USTA uses to determine tournament acceptance and National Standings List position.`,vr:`NO ADMIN PANEL NEEDED.
+This is a general information/education question. The scripted response covers the full ranking formula.
+
+If the customer has a question about a specific missing tournament or points that seem off, reference /points-missing or /mta-doubles-points for more detail.
+
+Our data mirrors USTA exactly, so if they see a discrepancy, direct them to check USTA.com first.`,es:`If a specific result is showing on USTA but NOT in our app, create a support ticket for a data sync investigation.`,fu:`1. Are you asking about singles, doubles, or the combined ranking?
+2. What age division is the player in?
+3. Is there a specific tournament or result you think is missing?`,at:`Key facts: (1) Top 6 singles + top 6 doubles over rolling 52 weeks. (2) Combined ranking = singles points + 15% of doubles points + bonus points. (3) Combined ranking drives tournament acceptance. For detailed doubles questions, reference /mta-doubles-points.`},
   {id:103,c:"USTA / Ratings / UTR",h:"LIVE",p:"Low",sc:"/mta-doubles-points",
     q:`How does doubles points work?`,cr:`Doubles rankings use the same 3-step system as singles, with one key difference at the end.
 
