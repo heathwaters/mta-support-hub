@@ -28,7 +28,13 @@ export interface UserContext {
 
 let _adminClient: ReturnType<typeof createClient> | null = null;
 
-function getAdminClient() {
+/**
+ * Returns a singleton Supabase client built with the service role key. Server
+ * use only — never import this into code that runs in the browser. Exported so
+ * other server routes (e.g. /api/auth/login) can reuse the same memoized
+ * instance instead of constructing their own.
+ */
+export function getAdminClient() {
   if (_adminClient) return _adminClient;
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;

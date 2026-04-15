@@ -3910,15 +3910,30 @@ function AdminPanel({session}){
 }
 
 function LoginForm({supa}){
-  const[email,setEmail]=useState("");
+  const[identifier,setIdentifier]=useState("");
   const[pw,setPw]=useState("");
   const[err,setErr]=useState(null);
   const[busy,setBusy]=useState(false);
   const submit=async(e)=>{
     e.preventDefault();setBusy(true);setErr(null);
-    const{error}=await supa.auth.signInWithPassword({email,password:pw});
-    if(error)setErr(error.message);
-    setBusy(false);
+    try{
+      const r=await fetch("/api/auth/login",{
+        method:"POST",
+        headers:{"Content-Type":"application/json","x-requested-with":"XMLHttpRequest"},
+        body:JSON.stringify({identifier:identifier.trim(),password:pw}),
+      });
+      const j=await r.json().catch(()=>null);
+      if(!r.ok||!j||!j.ok){setErr((j&&j.error)||"Invalid credentials");return;}
+      const{error}=await supa.auth.setSession({
+        access_token:j.session.access_token,
+        refresh_token:j.session.refresh_token,
+      });
+      if(error)setErr(error.message);
+    }catch(_e){
+      setErr("Login failed. Please try again.");
+    }finally{
+      setBusy(false);
+    }
   };
   return (
     <div style={{minHeight:"100vh",display:"flex",alignItems:"center",justifyContent:"center",background:"linear-gradient(135deg,#1B4332 0%,#2D6A4F 60%,#40916C 100%)",padding:20}}>
@@ -3928,8 +3943,8 @@ function LoginForm({supa}){
           <h1 style={{margin:0,fontSize:20,fontWeight:700,fontFamily:"'Outfit',sans-serif",color:"var(--green-dark)"}}>Support Hub Login</h1>
           <p style={{margin:"4px 0 0",fontSize:12,color:"var(--text3)"}}>Virtual Assistant sign-in</p>
         </div>
-        <label style={{display:"block",fontSize:11,fontWeight:600,color:"var(--text2)",marginBottom:4}}>Email</label>
-        <input type="email" value={email} onChange={e=>setEmail(e.target.value)} required autoFocus
+        <label style={{display:"block",fontSize:11,fontWeight:600,color:"var(--text2)",marginBottom:4}}>Username or Email</label>
+        <input type="text" value={identifier} onChange={e=>setIdentifier(e.target.value)} required autoFocus autoCapitalize="none" autoCorrect="off" spellCheck="false"
           style={{width:"100%",padding:"10px 12px",border:"1px solid var(--border)",borderRadius:8,fontSize:13,marginBottom:12,outline:"none",boxSizing:"border-box"}}/>
         <label style={{display:"block",fontSize:11,fontWeight:600,color:"var(--text2)",marginBottom:4}}>Password</label>
         <input type="password" value={pw} onChange={e=>setPw(e.target.value)} required

@@ -8,7 +8,7 @@ import { validateRole } from "@/lib/auth";
 // to guarantee a single source of truth for role allow-listing. The heavier
 // `verifySession` path is re-run inside route handlers via requireAuth.
 
-const PUBLIC_PATHS = ["/api/health", "/api/config"];
+const PUBLIC_PATHS = ["/api/health", "/api/config", "/api/auth/login"];
 
 export const config = {
   matcher: "/api/:path*",
