@@ -1951,6 +1951,14 @@ You can also find registration links at: https://matchtennisteam.com/#tourn_regi
 
 The scripted response should handle most cases. Admin panel is backup.`,es:`If registration errors occur, create a support ticket with event details.`,fu:`1. What is the date and state of your event?
 2. Do you already have a Match Tennis Team account?`,at:`Many parents download the wrong app. Always emphasize Match Tennis TEAM, not Match Tennis App. The two are separate. If they cannot find their event on the registration page, ask for date and state so you can provide the direct link.`},
+  {id:121,c:"Registration / Account Creation",h:"LIVE",p:"Low",sc:"/mtt-captain-deposit-auth",
+    q:`I have a captain who registered but did not authorize a team deposit. How is that handled now without a link?`,cr:`The captain just needs to go back to the same registration link they used originally. Because we set up a Stripe customer during their original registration, returning to the link will recognize them and let them complete the team deposit authorization — no separate deposit link needed.`,vr:`ADMIN STEPS:
+1. Confirm the captain has already completed initial registration (search the admin panel by email or USTA number)
+2. Provide the same event registration link the captain used originally
+3. When they return, the link detects the existing Stripe customer and prompts only for the deposit authorization
+4. If the captain cannot find the original link, look it up in the admin panel: search events by state and date, then click 'Copy Registration Link' and paste into tawk.to chat`,es:`If returning to the registration link does not surface the deposit authorization step, create a support ticket. Collect: Name, Email, Captain's name, Team name, Event (state + date), USTA number, Issue summary.`,fu:`1. What team and event did you register for?
+2. Do you have the original registration link?
+3. Did the rest of registration complete successfully?`,at:`The same registration link handles both initial registration and deposit authorization. The Stripe customer persists from the original registration, so the captain does not need a new or separate deposit link.`},
   {id:62,c:"Captain / Admin / Permissions",h:"LIVE",p:"Low",sc:"/captain-privileges",
     q:`How do I grant co captain privileges to another player on my team?`,cr:`You can grant a player co captain privileges by following these steps:
 
